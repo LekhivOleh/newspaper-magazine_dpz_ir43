@@ -1,0 +1,74 @@
+:root {
+    --tp-ink: #111318;
+    --tp-paper: #faf9f6;
+    --tp-accent: #ff3b5c;
+    --tp-muted: #6b7080;
+    --tp-serif: "Playfair Display", Georgia, serif;
+    --tp-sans: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+html, body {
+    height: 100%;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    background: var(--tp-paper);
+    color: var(--tp-ink);
+    font-family: var(--tp-sans);
+}
+
+main {
+    flex: 1;
+}
+
+.site-header {
+    background: var(--tp-ink);
+}
+
+.brand {
+    font-family: var(--tp-serif);
+    font-weight: 900;
+    font-size: 1.6rem;
+    letter-spacing: -0.02em;
+}
+
+.brand span,
+.hero-title span {
+    color: var(--tp-accent);
+}
+
+.hero {
+    padding: 4rem 0 3rem;
+    border-bottom: 2px solid var(--tp-ink);
+}
+
+.hero-kicker {
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--tp-muted);
+}
+
+.hero-title {
+    font-family: var(--tp-serif);
+    font-weight: 900;
+    font-size: clamp(3rem, 10vw, 6.5rem);
+    line-height: 1;
+    letter-spacing: -0.03em;
+}
+
+.hero-lead {
+    max-width: 40rem;
+    font-size: 1.15rem;
+    color: var(--tp-muted);
+}
+
+.site-footer {
+    padding: 1.5rem 0;
+    background: var(--tp-ink);
+    color: #aab0c0;
+    font-size: 0.9rem;
+}
