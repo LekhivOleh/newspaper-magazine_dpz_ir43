@@ -23,4 +23,14 @@ public class GalleryBlock : ContentBlock
     }
 }
 
-public record GalleryImage(string Url, string? Caption);
+public class GalleryImage
+{
+    public string Url { get; private set; }
+    public string? Caption { get; private set; }
+
+    public GalleryImage(string url, string? caption = null)
+    {
+        Url = Guard.NotEmpty(url, "Посилання на зображення", 500);
+        Caption = Guard.Optional(caption, "Підпис", 300);
+    }
+}

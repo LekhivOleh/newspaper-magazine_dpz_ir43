@@ -1,9 +1,22 @@
+using CURSOVA.Infrastructure.Persistence;
+using CURSOVA.Infrastructure.Persistence.Seeding;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddOpenApi();
 
+builder.Services.AddDbContext<MagazineDbContext>(options =>
+    options.UseSqlite(builder.Configuration.GetConnectionString("Magazine")));
+
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<MagazineDbContext>();
+    await MagazineSeeder.InitializeAsync(db);
+}
 
 if (app.Environment.IsDevelopment())
 {
