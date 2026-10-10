@@ -1,14 +1,12 @@
+using CURSOVA.Infrastructure;
 using CURSOVA.Infrastructure.Persistence;
 using CURSOVA.Infrastructure.Persistence.Seeding;
-using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddOpenApi();
-
-builder.Services.AddDbContext<MagazineDbContext>(options =>
-    options.UseSqlite(builder.Configuration.GetConnectionString("Magazine")));
+builder.Services.AddInfrastructure(builder.Configuration);
 
 var app = builder.Build();
 
