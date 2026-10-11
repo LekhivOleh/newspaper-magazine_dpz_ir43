@@ -9,6 +9,7 @@ public interface IArticleService
     Task<ArticleDetailsDto> GetBySlugAsync(string slug, CancellationToken ct = default);
     Task<ArticleDetailsDto> CreateAsync(SaveArticleRequest request, CancellationToken ct = default);
     Task<ArticleDetailsDto> UpdateAsync(int id, SaveArticleRequest request, CancellationToken ct = default);
+    Task<ArticleDetailsDto> ReplaceContentAsync(int id, SaveContentRequest request, CancellationToken ct = default);
     Task<ArticleDetailsDto> PublishAsync(int id, CancellationToken ct = default);
     Task<ArticleDetailsDto> ArchiveAsync(int id, CancellationToken ct = default);
     Task DeleteAsync(int id, CancellationToken ct = default);

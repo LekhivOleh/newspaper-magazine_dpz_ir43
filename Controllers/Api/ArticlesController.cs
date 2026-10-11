@@ -30,6 +30,10 @@ public class ArticlesController(IArticleService articles) : ControllerBase
     public Task<ArticleDetailsDto> Update(int id, SaveArticleRequest request, CancellationToken ct) =>
         articles.UpdateAsync(id, request, ct);
 
+    [HttpPut("{id:int}/content")]
+    public Task<ArticleDetailsDto> ReplaceContent(int id, SaveContentRequest request, CancellationToken ct) =>
+        articles.ReplaceContentAsync(id, request, ct);
+
     [HttpPost("{id:int}/publish")]
     public Task<ArticleDetailsDto> Publish(int id, CancellationToken ct) => articles.PublishAsync(id, ct);
 

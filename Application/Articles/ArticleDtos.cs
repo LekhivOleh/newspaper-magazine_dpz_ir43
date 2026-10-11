@@ -53,6 +53,8 @@ public record ArticleFilter
     [Range(1, 50)] public int PageSize { get; init; } = 10;
 }
 
+public record SaveContentRequest([Required] IReadOnlyList<BlockDto> Blocks);
+
 public record SaveArticleRequest(
     [Required, MaxLength(Article.TitleMaxLength)] string Title,
     [Required, MaxLength(Article.LeadMaxLength)] string Lead,

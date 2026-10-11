@@ -73,13 +73,19 @@ public class Article : Entity
 
     public void SetAccessLevel(AccessLevel level) => AccessLevel = level;
 
-    public void AddBlock(ContentBlock block)
+    public void ReplaceContent(IEnumerable<ContentBlock> blocks)
     {
-        block.Position = _blocks.Count;
-        _blocks.Add(block);
-    }
+        var newBlocks = blocks.ToList();
+        if (newBlocks.Count == 0 && IsPublished)
+            throw new DomainException("Опублікована стаття не може залишитися без контенту.");
 
-    public void ClearBlocks() => _blocks.Clear();
+        _blocks.Clear();
+        foreach (var block in newBlocks)
+        {
+            block.Position = _blocks.Count;
+            _blocks.Add(block);
+        }
+    }
 
     public void Publish()
     {

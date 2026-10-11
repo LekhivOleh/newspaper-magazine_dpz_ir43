@@ -1,6 +1,7 @@
 using CURSOVA.Application.Abstractions.Persistence;
 using CURSOVA.Application.Common;
 using CURSOVA.Domain.Articles;
+using CURSOVA.Domain.Articles.Building;
 using CURSOVA.Domain.Authors;
 using CURSOVA.Domain.Categories;
 
@@ -46,8 +47,13 @@ public class ArticleService(IUnitOfWork uow) : IArticleService
     {
         await EnsureReferencesExistAsync(request, ct);
 
-        var article = new Article(request.Title, request.Lead, request.CategoryId, request.AuthorId, request.CoverImageUrl);
-        article.SetAccessLevel(request.AccessLevel);
+        var article = ArticleBuilder.Create(request.Title)
+            .WithLead(request.Lead)
+            .WithCover(request.CoverImageUrl)
+            .InCategory(request.CategoryId)
+            .By(request.AuthorId)
+            .WithAccess(request.AccessLevel)
+            .Build();
         await EnsureUniqueSlugAsync(article, ct);
 
         uow.Articles.Add(article);
@@ -68,6 +74,13 @@ public class ArticleService(IUnitOfWork uow) : IArticleService
 
         await uow.SaveChangesAsync(ct);
         return await GetAsync(id, ct);
+    }
+
+    public Task<ArticleDetailsDto> ReplaceContentAsync(int id, SaveContentRequest request, CancellationToken ct = default)
+    {
+        var content = new ContentBuilder();
+        ContentDirector.Construct(request.Blocks, content);
+        return ChangeAsync(id, a => a.ReplaceContent(content.Build()), ct);
     }
 
     public Task<ArticleDetailsDto> PublishAsync(int id, CancellationToken ct = default) =>
