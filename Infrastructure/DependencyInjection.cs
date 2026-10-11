@@ -1,6 +1,7 @@
 using CURSOVA.Application.Abstractions.Persistence;
 using CURSOVA.Infrastructure.Persistence;
 using CURSOVA.Infrastructure.Persistence.Repositories;
+using CURSOVA.Infrastructure.Web;
 using Microsoft.EntityFrameworkCore;
 
 namespace CURSOVA.Infrastructure;
@@ -16,6 +17,9 @@ public static class DependencyInjection
         services.AddScoped<IAuthorRepository, AuthorRepository>();
         services.AddScoped<IArticleRepository, ArticleRepository>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+        services.AddProblemDetails();
+        services.AddExceptionHandler<ApiExceptionHandler>();
 
         return services;
     }
