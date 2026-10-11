@@ -1,0 +1,111 @@
+using CURSOVA.Application.Abstractions.Persistence;
+using CURSOVA.Application.Common;
+using CURSOVA.Domain.Articles;
+using CURSOVA.Domain.Authors;
+using CURSOVA.Domain.Categories;
+
+namespace CURSOVA.Application.Articles;
+
+public class ArticleService(IUnitOfWork uow) : IArticleService
+{
+    public async Task<PagedResult<ArticleSummaryDto>> SearchAsync(ArticleFilter filter, CancellationToken ct = default)
+    {
+        var categoryId = filter.CategoryId;
+        if (categoryId is null && !string.IsNullOrWhiteSpace(filter.Category))
+        {
+            var category = await uow.Categories.GetBySlugAsync(filter.Category, ct)
+                           ?? throw NotFoundException.For<Category>(filter.Category);
+            categoryId = category.Id;
+        }
+
+        var page = await uow.Articles.SearchAsync(new ArticleQuery
+        {
+            CategoryId = categoryId,
+            AuthorId = filter.AuthorId,
+            AccessLevel = filter.Access,
+            Status = filter.Status ?? ArticleStatus.Published,
+            Search = filter.Search,
+            Page = filter.Page,
+            PageSize = filter.PageSize
+        }, ct);
+
+        return page.Map(a => a.ToSummary());
+    }
+
+    public async Task<ArticleDetailsDto> GetAsync(int id, CancellationToken ct = default) =>
+        (await LoadAsync(id, ct)).ToDetails();
+
+    public async Task<ArticleDetailsDto> GetBySlugAsync(string slug, CancellationToken ct = default)
+    {
+        var article = await uow.Articles.GetBySlugWithContentAsync(slug, ct)
+                      ?? throw NotFoundException.For<Article>(slug);
+        return article.ToDetails();
+    }
+
+    public async Task<ArticleDetailsDto> CreateAsync(SaveArticleRequest request, CancellationToken ct = default)
+    {
+        await EnsureReferencesExistAsync(request, ct);
+
+        var article = new Article(request.Title, request.Lead, request.CategoryId, request.AuthorId, request.CoverImageUrl);
+        article.SetAccessLevel(request.AccessLevel);
+        await EnsureUniqueSlugAsync(article, ct);
+
+        uow.Articles.Add(article);
+        await uow.SaveChangesAsync(ct);
+        return await GetAsync(article.Id, ct);
+    }
+
+    public async Task<ArticleDetailsDto> UpdateAsync(int id, SaveArticleRequest request, CancellationToken ct = default)
+    {
+        var article = await LoadAsync(id, ct);
+        await EnsureReferencesExistAsync(request, ct);
+
+        article.UpdateDetails(request.Title, request.Lead, request.CoverImageUrl);
+        article.MoveToCategory(request.CategoryId);
+        article.AssignAuthor(request.AuthorId);
+        article.SetAccessLevel(request.AccessLevel);
+        await EnsureUniqueSlugAsync(article, ct);
+
+        await uow.SaveChangesAsync(ct);
+        return await GetAsync(id, ct);
+    }
+
+    public Task<ArticleDetailsDto> PublishAsync(int id, CancellationToken ct = default) =>
+        ChangeAsync(id, a => a.Publish(), ct);
+
+    public Task<ArticleDetailsDto> ArchiveAsync(int id, CancellationToken ct = default) =>
+        ChangeAsync(id, a => a.Archive(), ct);
+
+    public async Task DeleteAsync(int id, CancellationToken ct = default)
+    {
+        var article = await LoadAsync(id, ct);
+        uow.Articles.Remove(article);
+        await uow.SaveChangesAsync(ct);
+    }
+
+    private async Task<ArticleDetailsDto> ChangeAsync(int id, Action<Article> change, CancellationToken ct)
+    {
+        var article = await LoadAsync(id, ct);
+        change(article);
+        await uow.SaveChangesAsync(ct);
+        return article.ToDetails();
+    }
+
+    private async Task<Article> LoadAsync(int id, CancellationToken ct) =>
+        await uow.Articles.GetWithContentAsync(id, ct) ?? throw NotFoundException.For<Article>(id);
+
+    private async Task EnsureReferencesExistAsync(SaveArticleRequest request, CancellationToken ct)
+    {
+        _ = await uow.Categories.GetByIdAsync(request.CategoryId, ct)
+            ?? throw NotFoundException.For<Category>(request.CategoryId);
+        _ = await uow.Authors.GetByIdAsync(request.AuthorId, ct)
+            ?? throw NotFoundException.For<Author>(request.AuthorId);
+    }
+
+    private async Task EnsureUniqueSlugAsync(Article article, CancellationToken ct)
+    {
+        var excludeId = article.Id == 0 ? (int?)null : article.Id;
+        if (await uow.Articles.SlugExistsAsync(article.Slug, excludeId, ct))
+            throw new ConflictException($"Стаття із заголовком «{article.Title}» уже існує.");
+    }
+}

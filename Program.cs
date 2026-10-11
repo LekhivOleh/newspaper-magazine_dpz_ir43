@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using CURSOVA.Application;
 using CURSOVA.Infrastructure;
 using CURSOVA.Infrastructure.Persistence;
@@ -6,7 +7,8 @@ using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews()
+    .AddJsonOptions(o => o.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 builder.Services.AddOpenApi();
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);

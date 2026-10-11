@@ -17,6 +17,9 @@ public class Article : Entity
     public string Lead { get; private set; } = null!;
     public string? CoverImageUrl { get; private set; }
 
+    // SQLite LIKE is case-insensitive only for ASCII, so Cyrillic search goes through a pre-lowered copy.
+    public string SearchText { get; private set; } = null!;
+
     public int CategoryId { get; private set; }
     public Category Category { get; private set; } = null!;
     public int AuthorId { get; private set; }
@@ -39,8 +42,16 @@ public class Article : Entity
     {
         UpdateDetails(title, lead, coverImageUrl);
         MoveToCategory(categoryId);
-        AuthorId = authorId;
+        AssignAuthor(authorId);
         CreatedAt = DateTime.UtcNow;
+    }
+
+    public void AssignAuthor(int authorId)
+    {
+        if (authorId <= 0)
+            throw new DomainException("Стаття має мати автора.");
+
+        AuthorId = authorId;
     }
 
     public void UpdateDetails(string title, string lead, string? coverImageUrl)
@@ -49,6 +60,7 @@ public class Article : Entity
         Slug = Common.Slug.From(Title);
         Lead = Guard.NotEmpty(lead, "Лід", LeadMaxLength);
         CoverImageUrl = Guard.Optional(coverImageUrl, "Обкладинка", 500);
+        SearchText = $"{Title} {Lead}".ToLowerInvariant();
     }
 
     public void MoveToCategory(int categoryId)

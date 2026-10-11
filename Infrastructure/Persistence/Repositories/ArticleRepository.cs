@@ -38,9 +38,8 @@ public class ArticleRepository(MagazineDbContext db) : Repository<Article>(db), 
             articles = articles.Where(a => a.AccessLevel == accessLevel);
         if (!string.IsNullOrWhiteSpace(query.Search))
         {
-            var term = query.Search.Trim();
-            articles = articles.Where(a => EF.Functions.Like(a.Title, $"%{term}%")
-                                           || EF.Functions.Like(a.Lead, $"%{term}%"));
+            var term = query.Search.Trim().ToLowerInvariant();
+            articles = articles.Where(a => a.SearchText.Contains(term));
         }
 
         var page = Math.Max(1, query.Page);

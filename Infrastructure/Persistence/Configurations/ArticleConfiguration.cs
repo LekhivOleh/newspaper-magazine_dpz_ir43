@@ -12,6 +12,7 @@ public class ArticleConfiguration : IEntityTypeConfiguration<Article>
         builder.Property(a => a.Slug).HasMaxLength(Article.TitleMaxLength * 2).IsRequired();
         builder.Property(a => a.Lead).HasMaxLength(Article.LeadMaxLength).IsRequired();
         builder.Property(a => a.CoverImageUrl).HasMaxLength(500);
+        builder.Property(a => a.SearchText).HasMaxLength(Article.TitleMaxLength + Article.LeadMaxLength + 1).IsRequired();
         builder.Property(a => a.Status).HasConversion<string>().HasMaxLength(20);
         builder.Property(a => a.AccessLevel).HasConversion<string>().HasMaxLength(20);
 

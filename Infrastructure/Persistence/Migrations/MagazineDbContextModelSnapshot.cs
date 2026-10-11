@@ -49,6 +49,11 @@ namespace CURSOVA.Infrastructure.Persistence.Migrations
                     b.Property<DateTime?>("PublishedAt")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("SearchText")
+                        .IsRequired()
+                        .HasMaxLength(801)
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Slug")
                         .IsRequired()
                         .HasMaxLength(400)
