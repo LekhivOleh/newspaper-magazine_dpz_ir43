@@ -1,0 +1,29 @@
+@using CURSOVA.Infrastructure.Identity
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<ApplicationUser> UserManager
+
+@if (User.Identity?.IsAuthenticated == true)
+{
+    var user = await UserManager.GetUserAsync(User);
+    <div class="dropdown user-menu">
+        <button class="btn btn-sm btn-outline-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            @(user?.DisplayName ?? User.Identity.Name)
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end">
+            <li>
+                <form asp-controller="Account" asp-action="Logout" method="post">
+                    <button type="submit" class="dropdown-item">Вийти</button>
+                </form>
+            </li>
+        </ul>
+    </div>
+}
+else
+{
+    var onAccountPage = Context.Request.Path.StartsWithSegments("/account");
+    string? returnUrl = onAccountPage ? Context.Request.Query["returnUrl"] : Context.Request.Path + Context.Request.QueryString;
+    <div class="user-menu d-flex gap-2">
+        <a class="btn btn-sm btn-outline-light" asp-controller="Account" asp-action="Login" asp-route-returnUrl="@returnUrl">Увійти</a>
+        <a class="btn btn-sm btn-light" asp-controller="Account" asp-action="Register" asp-route-returnUrl="@returnUrl">Реєстрація</a>
+    </div>
+}

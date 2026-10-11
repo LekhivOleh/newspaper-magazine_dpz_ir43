@@ -4,6 +4,7 @@ using System.Text.Unicode;
 using Microsoft.Extensions.WebEncoders;
 using CURSOVA.Application;
 using CURSOVA.Infrastructure;
+using CURSOVA.Infrastructure.Identity;
 using CURSOVA.Infrastructure.Persistence;
 using CURSOVA.Infrastructure.Persistence.Seeding;
 using Scalar.AspNetCore;
@@ -27,6 +28,7 @@ using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<MagazineDbContext>();
     await MagazineSeeder.InitializeAsync(db);
+    await IdentitySeeder.InitializeAsync(scope.ServiceProvider, app.Configuration);
 }
 
 if (app.Environment.IsDevelopment())
@@ -47,6 +49,7 @@ app.UseWhen(ctx => !ctx.Request.Path.StartsWithSegments("/api"),
 
 app.UseHttpsRedirection();
 app.UseRouting();
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapStaticAssets();

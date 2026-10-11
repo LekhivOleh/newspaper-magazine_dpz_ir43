@@ -1,0 +1,41 @@
+@model RegisterViewModel
+@{
+    ViewData["Title"] = "Реєстрація";
+}
+
+<div class="auth-card">
+    <p class="hero-kicker">Приєднуйтесь</p>
+    <h1 class="auth-title">Реєстрація</h1>
+
+    <form asp-action="Register" method="post" novalidate>
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2" role="alert"></div>
+        <input type="hidden" asp-for="ReturnUrl" />
+
+        <div class="mb-3">
+            <label asp-for="DisplayName" class="form-label"></label>
+            <input asp-for="DisplayName" class="form-control" autocomplete="name" autofocus />
+            <span asp-validation-for="DisplayName" class="text-danger small"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="Email" class="form-label"></label>
+            <input asp-for="Email" class="form-control" autocomplete="email" />
+            <span asp-validation-for="Email" class="text-danger small"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="Password" class="form-label"></label>
+            <input asp-for="Password" class="form-control" autocomplete="new-password" />
+            <div class="form-text">Щонайменше 8 символів, мала літера та цифра.</div>
+            <span asp-validation-for="Password" class="text-danger small"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="ConfirmPassword" class="form-label"></label>
+            <input asp-for="ConfirmPassword" class="form-control" autocomplete="new-password" />
+            <span asp-validation-for="ConfirmPassword" class="text-danger small"></span>
+        </div>
+        <button type="submit" class="btn btn-dark w-100">Створити акаунт</button>
+    </form>
+
+    <p class="auth-switch">
+        Уже маєте акаунт? <a asp-action="Login" asp-route-returnUrl="@Model.ReturnUrl">Увійти</a>
+    </p>
+</div>

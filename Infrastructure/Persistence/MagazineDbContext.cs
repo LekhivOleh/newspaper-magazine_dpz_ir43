@@ -2,11 +2,15 @@ using CURSOVA.Domain.Articles;
 using CURSOVA.Domain.Articles.Blocks;
 using CURSOVA.Domain.Authors;
 using CURSOVA.Domain.Categories;
+using CURSOVA.Infrastructure.Identity;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace CURSOVA.Infrastructure.Persistence;
 
-public class MagazineDbContext(DbContextOptions<MagazineDbContext> options) : DbContext(options)
+public class MagazineDbContext(DbContextOptions<MagazineDbContext> options)
+    : IdentityDbContext<ApplicationUser, IdentityRole<int>, int>(options)
 {
     public DbSet<Category> Categories => Set<Category>();
     public DbSet<Author> Authors => Set<Author>();
@@ -20,6 +24,9 @@ public class MagazineDbContext(DbContextOptions<MagazineDbContext> options) : Db
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        base.OnModelCreating(modelBuilder);
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(MagazineDbContext).Assembly);
+
+        modelBuilder.Entity<ApplicationUser>().Property(u => u.DisplayName).HasMaxLength(100).IsRequired();
     }
 }

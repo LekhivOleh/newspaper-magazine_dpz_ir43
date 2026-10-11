@@ -1,4 +1,6 @@
+using CURSOVA.Application.Abstractions.Identity;
 using CURSOVA.Application.Categories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CURSOVA.Controllers.Api;
@@ -16,6 +18,7 @@ public class CategoriesController(ICategoryService categories) : ControllerBase
     [HttpGet("{slug}")]
     public Task<CategoryDto> GetBySlug(string slug, CancellationToken ct) => categories.GetBySlugAsync(slug, ct);
 
+    [Authorize(Roles = Roles.Admin)]
     [HttpPost]
     [ProducesResponseType<CategoryDto>(StatusCodes.Status201Created)]
     public async Task<ActionResult<CategoryDto>> Create(SaveCategoryRequest request, CancellationToken ct)
@@ -24,10 +27,12 @@ public class CategoriesController(ICategoryService categories) : ControllerBase
         return CreatedAtAction(nameof(Get), new { id = created.Id }, created);
     }
 
+    [Authorize(Roles = Roles.Admin)]
     [HttpPut("{id:int}")]
     public Task<CategoryDto> Update(int id, SaveCategoryRequest request, CancellationToken ct) =>
         categories.UpdateAsync(id, request, ct);
 
+    [Authorize(Roles = Roles.Admin)]
     [HttpDelete("{id:int}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> Delete(int id, CancellationToken ct)
