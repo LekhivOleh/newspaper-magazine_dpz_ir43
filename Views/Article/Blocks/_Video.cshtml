@@ -1,0 +1,12 @@
+@model VideoBlockDto
+
+<figure class="block block-video">
+    <div class="ratio ratio-16x9">
+        <iframe src="@Model.EmbedUrl" title="@(Model.Caption ?? "Відео")" loading="lazy"
+                allow="accelerometer; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    </div>
+    @if (Model.Caption is not null)
+    {
+        <figcaption>@Model.Caption</figcaption>
+    }
+</figure>

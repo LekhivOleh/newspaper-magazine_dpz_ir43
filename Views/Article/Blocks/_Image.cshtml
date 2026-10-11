@@ -1,0 +1,9 @@
+@model ImageBlockDto
+
+<figure class="block block-image">
+    <img src="@Model.Url" alt="@Model.Caption" loading="lazy" />
+    @if (Model.Caption is not null)
+    {
+        <figcaption>@Model.Caption</figcaption>
+    }
+</figure>

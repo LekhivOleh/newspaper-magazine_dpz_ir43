@@ -1,0 +1,66 @@
+@model ArticlePageViewModel
+@{
+    var article = Model.Article.Summary;
+    ViewData["Title"] = article.Title;
+}
+
+<article class="article">
+    <header class="article-header">
+        <a class="kicker" asp-controller="Category" asp-action="Show" asp-route-slug="@article.Category.Slug">@article.Category.Name</a>
+        @if (article.AccessLevel == AccessLevel.Premium)
+        {
+            <span class="badge-premium static">Premium</span>
+        }
+        <h1 class="article-title">@article.Title</h1>
+        <p class="article-lead">@article.Lead</p>
+
+        <div class="article-byline">
+            @if (article.Author.AvatarUrl is not null)
+            {
+                <img class="avatar" src="@article.Author.AvatarUrl" alt="" />
+            }
+            <div>
+                <div class="byline-name">@article.Author.FullName</div>
+                <partial name="_ArticleMeta" model="article" />
+            </div>
+        </div>
+    </header>
+
+    @if (article.CoverImageUrl is not null)
+    {
+        <figure class="article-cover">
+            <img src="@article.CoverImageUrl" alt="" />
+        </figure>
+    }
+
+    <div class="article-content">
+        @for (var i = 0; i < Model.Article.Blocks.Count; i++)
+        {
+            var block = Model.Article.Blocks[i];
+            ViewData["BlockIndex"] = i;
+            switch (block)
+            {
+                case TextBlockDto text:
+                    <partial name="Blocks/_Text" model="text" />
+                    break;
+                case ImageBlockDto image:
+                    <partial name="Blocks/_Image" model="image" />
+                    break;
+                case VideoBlockDto video:
+                    <partial name="Blocks/_Video" model="video" />
+                    break;
+                case GalleryBlockDto gallery:
+                    <partial name="Blocks/_Gallery" model="gallery" view-data="ViewData" />
+                    break;
+            }
+        }
+    </div>
+</article>
+
+@if (Model.Related.Count > 0)
+{
+    <section class="section">
+        <h2 class="section-title">Ще в рубриці «@article.Category.Name»</h2>
+        <partial name="_ArticleGrid" model="Model.Related" />
+    </section>
+}

@@ -96,6 +96,13 @@ public class ArticleService(IUnitOfWork uow) : IArticleService
         await uow.SaveChangesAsync(ct);
     }
 
+    public async Task RegisterViewAsync(int id, CancellationToken ct = default)
+    {
+        var article = await uow.Articles.GetByIdAsync(id, ct) ?? throw NotFoundException.For<Article>(id);
+        article.RegisterView();
+        await uow.SaveChangesAsync(ct);
+    }
+
     private async Task<ArticleDetailsDto> ChangeAsync(int id, Action<Article> change, CancellationToken ct)
     {
         var article = await LoadAsync(id, ct);

@@ -1,0 +1,19 @@
+@model SearchViewModel
+@{
+    ViewData["Title"] = "Пошук";
+}
+
+<header class="page-header">
+    <p class="hero-kicker">Пошук</p>
+    <form method="get" action="/search" class="search-page-form">
+        <input class="form-control form-control-lg" type="search" name="q" value="@Model.Query"
+               placeholder="Що шукаємо?" autofocus />
+    </form>
+</header>
+
+@if (Model.Results is { } results)
+{
+    <p class="text-muted">Знайдено: @results.TotalCount</p>
+    <partial name="_ArticleGrid" model="results.Items" />
+    <partial name="_Pagination" model="Model.Pager" />
+}

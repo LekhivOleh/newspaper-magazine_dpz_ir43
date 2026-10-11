@@ -1,0 +1,22 @@
+@model ArticleSummaryDto
+
+<article class="article-card">
+    <a asp-controller="Article" asp-action="Show" asp-route-slug="@Model.Slug" class="article-card-cover">
+        @if (Model.CoverImageUrl is not null)
+        {
+            <img src="@Model.CoverImageUrl" alt="" loading="lazy" />
+        }
+        @if (Model.AccessLevel == AccessLevel.Premium)
+        {
+            <span class="badge-premium">Premium</span>
+        }
+    </a>
+    <div class="article-card-body">
+        <a class="kicker" asp-controller="Category" asp-action="Show" asp-route-slug="@Model.Category.Slug">@Model.Category.Name</a>
+        <h3 class="article-card-title">
+            <a asp-controller="Article" asp-action="Show" asp-route-slug="@Model.Slug">@Model.Title</a>
+        </h3>
+        <p class="article-card-lead">@Model.Lead</p>
+        <partial name="_ArticleMeta" model="Model" />
+    </div>
+</article>

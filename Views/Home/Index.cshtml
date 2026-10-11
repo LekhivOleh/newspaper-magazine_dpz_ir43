@@ -1,9 +1,30 @@
+@model HomeViewModel
 @{
     ViewData["Title"] = "Головна";
 }
 
-<section class="hero">
-    <p class="hero-kicker">Онлайн-журнал про технології</p>
-    <h1 class="hero-title">Tech<span>Pulse</span></h1>
-    <p class="hero-lead">Огляди гаджетів, аналітика ринку, інтерв'ю та поради — у глянцевому форматі.</p>
+@if (Model.Featured is { } featured)
+{
+    <section class="featured">
+        <a class="featured-cover" asp-controller="Article" asp-action="Show" asp-route-slug="@featured.Slug">
+            @if (featured.CoverImageUrl is not null)
+            {
+                <img src="@featured.CoverImageUrl" alt="" />
+            }
+        </a>
+        <div class="featured-body">
+            <p class="hero-kicker">Головне · @featured.Category.Name</p>
+            <h1 class="featured-title">
+                <a asp-controller="Article" asp-action="Show" asp-route-slug="@featured.Slug">@featured.Title</a>
+            </h1>
+            <p class="hero-lead">@featured.Lead</p>
+            <partial name="_ArticleMeta" model="featured" />
+        </div>
+    </section>
+}
+
+<section class="section">
+    <h2 class="section-title">@(Model.Pager.Page == 1 ? "Свіжі матеріали" : "Архів")</h2>
+    <partial name="_ArticleGrid" model="Model.Articles" />
+    <partial name="_Pagination" model="Model.Pager" />
 </section>

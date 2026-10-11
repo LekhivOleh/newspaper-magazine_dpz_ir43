@@ -20,9 +20,11 @@
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="mainNav">
-                    <ul class="navbar-nav me-auto">
-                        <li class="nav-item"><a class="nav-link" asp-controller="Home" asp-action="Index">Головна</a></li>
-                    </ul>
+                    <vc:category-nav />
+                    <form class="search-form d-flex" method="get" action="/search" role="search">
+                        <input class="form-control form-control-sm" type="search" name="q" placeholder="Пошук статей…"
+                               aria-label="Пошук" value="@Context.Request.Query["q"]" />
+                    </form>
                 </div>
             </div>
         </nav>

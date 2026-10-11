@@ -1,4 +1,7 @@
+using System.Text.Encodings.Web;
 using System.Text.Json.Serialization;
+using System.Text.Unicode;
+using Microsoft.Extensions.WebEncoders;
 using CURSOVA.Application;
 using CURSOVA.Infrastructure;
 using CURSOVA.Infrastructure.Persistence;
@@ -13,6 +16,7 @@ builder.Services.AddControllersWithViews()
         o.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
         o.JsonSerializerOptions.AllowOutOfOrderMetadataProperties = true;
     });
+builder.Services.Configure<WebEncoderOptions>(o => o.TextEncoderSettings = new TextEncoderSettings(UnicodeRanges.All));
 builder.Services.AddOpenApi();
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
@@ -36,6 +40,10 @@ else
     app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
 }
+
+app.UseRequestLocalization("uk-UA");
+app.UseWhen(ctx => !ctx.Request.Path.StartsWithSegments("/api"),
+    web => web.UseStatusCodePagesWithReExecute("/status/{0}"));
 
 app.UseHttpsRedirection();
 app.UseRouting();

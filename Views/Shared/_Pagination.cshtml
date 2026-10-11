@@ -1,0 +1,16 @@
+@model PagerViewModel
+
+@if (Model.TotalPages > 1)
+{
+    <nav class="pager" aria-label="Сторінки">
+        @if (Model.Page > 1)
+        {
+            <a class="pager-link" href="@Model.PageUrl(Model.Page - 1)">← Новіші</a>
+        }
+        <span class="pager-status">Сторінка @Model.Page з @Model.TotalPages</span>
+        @if (Model.Page < Model.TotalPages)
+        {
+            <a class="pager-link" href="@Model.PageUrl(Model.Page + 1)">Старіші →</a>
+        }
+    </nav>
+}

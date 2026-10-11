@@ -1,0 +1,15 @@
+@model IReadOnlyList<ArticleSummaryDto>
+
+@if (Model.Count == 0)
+{
+    <p class="empty-state">Тут поки що немає статей.</p>
+}
+else
+{
+    <div class="article-grid">
+        @foreach (var article in Model)
+        {
+            <partial name="_ArticleCard" model="article" />
+        }
+    </div>
+}

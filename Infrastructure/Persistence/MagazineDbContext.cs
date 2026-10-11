@@ -13,6 +13,11 @@ public class MagazineDbContext(DbContextOptions<MagazineDbContext> options) : Db
     public DbSet<Article> Articles => Set<Article>();
     public DbSet<ContentBlock> ContentBlocks => Set<ContentBlock>();
 
+    protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
+    {
+        configurationBuilder.Properties<DateTime>().HaveConversion<UtcDateTimeConverter>();
+    }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(MagazineDbContext).Assembly);

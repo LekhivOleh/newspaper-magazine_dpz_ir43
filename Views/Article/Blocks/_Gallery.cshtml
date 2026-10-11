@@ -1,0 +1,44 @@
+@model GalleryBlockDto
+@{
+    var id = $"gallery-{ViewData["BlockIndex"]}";
+}
+
+<section class="block block-gallery">
+    @if (Model.Title is not null)
+    {
+        <h3 class="gallery-title">@Model.Title</h3>
+    }
+    <div id="@id" class="carousel slide">
+        <div class="carousel-indicators">
+            @for (var i = 0; i < Model.Images.Count; i++)
+            {
+                <button type="button" data-bs-target="#@id" data-bs-slide-to="@i" class="@(i == 0 ? "active" : "")"
+                        aria-current="@(i == 0 ? "true" : "false")" aria-label="Фото @(i + 1)"></button>
+            }
+        </div>
+        <div class="carousel-inner">
+            @for (var i = 0; i < Model.Images.Count; i++)
+            {
+                var image = Model.Images[i];
+                <div class="carousel-item @(i == 0 ? "active" : "")">
+                    <img src="@image.Url" class="d-block w-100" alt="@image.Caption" loading="lazy" />
+                    @if (image.Caption is not null)
+                    {
+                        <div class="carousel-caption">@image.Caption</div>
+                    }
+                </div>
+            }
+        </div>
+        @if (Model.Images.Count > 1)
+        {
+            <button class="carousel-control-prev" type="button" data-bs-target="#@id" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Попереднє</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#@id" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Наступне</span>
+            </button>
+        }
+    </div>
+</section>

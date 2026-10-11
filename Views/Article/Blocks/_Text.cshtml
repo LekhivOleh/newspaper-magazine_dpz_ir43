@@ -1,0 +1,12 @@
+@model TextBlockDto
+
+<section class="block block-text">
+    @if (Model.Heading is not null)
+    {
+        <h2>@Model.Heading</h2>
+    }
+    @foreach (var paragraph in Model.Body.Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+    {
+        <p>@paragraph</p>
+    }
+</section>

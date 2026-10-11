@@ -13,4 +13,5 @@ public interface IArticleService
     Task<ArticleDetailsDto> PublishAsync(int id, CancellationToken ct = default);
     Task<ArticleDetailsDto> ArchiveAsync(int id, CancellationToken ct = default);
     Task DeleteAsync(int id, CancellationToken ct = default);
+    Task RegisterViewAsync(int id, CancellationToken ct = default);
 }

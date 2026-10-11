@@ -1,0 +1,16 @@
+@model CategoryPageViewModel
+@{
+    ViewData["Title"] = Model.Category.Name;
+}
+
+<header class="page-header">
+    <p class="hero-kicker">Рубрика</p>
+    <h1 class="page-title">@Model.Category.Name</h1>
+    @if (Model.Category.Description is not null)
+    {
+        <p class="hero-lead">@Model.Category.Description</p>
+    }
+</header>
+
+<partial name="_ArticleGrid" model="Model.Articles.Items" />
+<partial name="_Pagination" model="Model.Pager" />

@@ -1,0 +1,16 @@
+@model IReadOnlyList<CategoryDto>
+@{
+    var currentSlug = ViewContext.RouteData.Values["slug"] as string;
+    var onCategoryPage = ViewContext.RouteData.Values["controller"] as string == "Category";
+}
+
+<ul class="navbar-nav me-auto">
+    @foreach (var category in Model)
+    {
+        var active = onCategoryPage && category.Slug == currentSlug;
+        <li class="nav-item">
+            <a class="nav-link @(active ? "active" : "")" asp-controller="Category" asp-action="Show"
+               asp-route-slug="@category.Slug">@category.Name</a>
+        </li>
+    }
+</ul>

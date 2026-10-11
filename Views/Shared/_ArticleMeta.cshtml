@@ -1,0 +1,12 @@
+@model ArticleSummaryDto
+
+<div class="article-meta">
+    <span>@Model.Author.FullName</span>
+    @if (Model.PublishedAt is { } published)
+    {
+        <span>·</span>
+        <time datetime="@published.ToString("O")">@published.ToLocalTime().ToString("d MMMM yyyy")</time>
+    }
+    <span>·</span>
+    <span>@UkrainianPlural.Format(Model.ViewCount, "перегляд", "перегляди", "переглядів")</span>
+</div>
