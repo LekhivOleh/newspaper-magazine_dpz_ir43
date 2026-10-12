@@ -9,6 +9,10 @@
         <a class="nav-link nav-link-issues @(ViewContext.RouteData.Values["controller"] as string == "Issue" ? "active" : "")"
            asp-controller="Issue" asp-action="Index">Випуски</a>
     </li>
+    <li class="nav-item">
+        <a class="nav-link @(ViewContext.RouteData.Values["controller"] as string == "Poll" ? "active" : "")"
+           asp-controller="Poll" asp-action="Index">Опитування</a>
+    </li>
     @foreach (var category in Model)
     {
         var active = onCategoryPage && category.Slug == currentSlug;

@@ -547,3 +547,124 @@ figcaption,
     font-size: 0.9rem;
     color: var(--tp-muted);
 }
+
+/* Polls */
+
+.poll {
+    margin: 2.5rem 0;
+    padding: 1.75rem;
+    background: #fff;
+    border: 1px solid var(--tp-line);
+    border-top: 4px solid var(--tp-accent);
+}
+
+.poll-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(22rem, 1fr));
+    gap: 1.5rem;
+    align-items: start;
+}
+
+.poll-grid .poll {
+    margin: 0;
+}
+
+.poll-page {
+    max-width: 42rem;
+    margin: 0 auto;
+    padding-top: 1.5rem;
+}
+
+.poll-kicker {
+    margin-bottom: 0.4rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--tp-accent);
+}
+
+.poll-question {
+    font-family: var(--tp-serif);
+    font-weight: 700;
+    font-size: 1.5rem;
+    line-height: 1.25;
+}
+
+.poll-hint,
+.poll-footer {
+    font-size: 0.85rem;
+    color: var(--tp-muted);
+}
+
+.poll-options {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin: 1.25rem 0;
+}
+
+.poll-option {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--tp-line);
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+}
+
+.poll-option:hover {
+    border-color: var(--tp-ink);
+}
+
+.poll-option:has(input:checked) {
+    border-color: var(--tp-accent);
+    background: #fff5f7;
+}
+
+.poll-option input {
+    accent-color: var(--tp-accent);
+}
+
+.poll-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.poll-results {
+    list-style: none;
+    margin: 1.25rem 0 1rem;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+}
+
+.poll-result-label {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.3rem;
+    font-size: 0.95rem;
+}
+
+.poll-bar {
+    height: 0.5rem;
+    background: var(--tp-paper);
+}
+
+.poll-bar span {
+    display: block;
+    height: 100%;
+    background: var(--tp-muted);
+    transition: width 0.6s ease;
+}
+
+.poll-results .is-mine .poll-bar span {
+    background: var(--tp-accent);
+}
+
+.poll-results .is-mine .poll-result-label {
+    font-weight: 600;
+}

@@ -2,6 +2,7 @@ using CURSOVA.Domain.Articles;
 using CURSOVA.Domain.Articles.Blocks;
 using CURSOVA.Domain.Authors;
 using CURSOVA.Domain.Categories;
+using CURSOVA.Domain.Interactive;
 using CURSOVA.Domain.Issues;
 using CURSOVA.Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity;
@@ -18,6 +19,8 @@ public class MagazineDbContext(DbContextOptions<MagazineDbContext> options)
     public DbSet<Article> Articles => Set<Article>();
     public DbSet<ContentBlock> ContentBlocks => Set<ContentBlock>();
     public DbSet<Issue> Issues => Set<Issue>();
+    public DbSet<InteractiveElement> InteractiveElements => Set<InteractiveElement>();
+    public DbSet<Submission> Submissions => Set<Submission>();
 
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
     {

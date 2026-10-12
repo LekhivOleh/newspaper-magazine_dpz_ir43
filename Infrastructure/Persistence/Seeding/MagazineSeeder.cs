@@ -1,6 +1,7 @@
 using CURSOVA.Domain.Articles.Building;
 using CURSOVA.Domain.Authors;
 using CURSOVA.Domain.Categories;
+using CURSOVA.Domain.Interactive.Polls;
 using CURSOVA.Domain.Issues;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,6 +14,7 @@ public static class MagazineSeeder
         await db.Database.MigrateAsync(ct);
         await SeedCatalogAsync(db, ct);
         await SeedIssuesAsync(db, ct);
+        await SeedPollsAsync(db, ct);
     }
 
     private static async Task SeedCatalogAsync(MagazineDbContext db, CancellationToken ct)
@@ -151,6 +153,33 @@ public static class MagazineSeeder
         issue.Feature();
 
         db.Issues.Add(issue);
+        await db.SaveChangesAsync(ct);
+    }
+
+    private static async Task SeedPollsAsync(MagazineDbContext db, CancellationToken ct)
+    {
+        if (await db.InteractiveElements.OfType<Poll>().AnyAsync(ct))
+            return;
+
+        var laptopArticleId = await db.Articles
+            .Where(a => a.Slug == "iak-obraty-noutbuk-dlia-navchannia-u-2026-rotsi")
+            .Select(a => (int?)a.Id)
+            .FirstOrDefaultAsync(ct);
+
+        db.InteractiveElements.AddRange(
+            new Poll("Ноутбук для навчання",
+                "Що для вас найважливіше в ноутбуці для навчання?",
+                ["Автономність", "Вага та розмір", "Продуктивність", "Ціна"],
+                articleId: laptopArticleId),
+            new Poll("AI у повсякденні",
+                "Як часто ви користуєтеся AI-асистентами?",
+                ["Щодня", "Кілька разів на тиждень", "Рідко", "Не користуюся"],
+                description: "Опитування редакції TechPulse"),
+            new Poll("Покупки року",
+                "Які гаджети ви купили цього року?",
+                ["Смартфон", "Ноутбук", "Навушники", "Смарт-годинник", "Нічого не купував(-ла)"],
+                allowMultiple: true));
+
         await db.SaveChangesAsync(ct);
     }
 

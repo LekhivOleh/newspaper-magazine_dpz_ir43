@@ -1,0 +1,14 @@
+@model PollDto
+@{
+    ViewData["Title"] = Model.Title;
+}
+
+<div class="poll-page">
+    <a asp-action="Index" class="text-muted small">← Усі опитування</a>
+    <h1 class="page-title my-3">@Model.Title</h1>
+    @if (Model.Description is not null)
+    {
+        <p class="hero-lead">@Model.Description</p>
+    }
+    <partial name="_PollWidget" model="Model" />
+</div>

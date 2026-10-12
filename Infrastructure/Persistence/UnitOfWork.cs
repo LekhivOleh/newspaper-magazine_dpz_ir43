@@ -7,12 +7,14 @@ public class UnitOfWork(
     ICategoryRepository categories,
     IAuthorRepository authors,
     IArticleRepository articles,
-    IIssueRepository issues) : IUnitOfWork
+    IIssueRepository issues,
+    IInteractiveRepository interactive) : IUnitOfWork
 {
     public ICategoryRepository Categories { get; } = categories;
     public IAuthorRepository Authors { get; } = authors;
     public IArticleRepository Articles { get; } = articles;
     public IIssueRepository Issues { get; } = issues;
+    public IInteractiveRepository Interactive { get; } = interactive;
 
     public Task<int> SaveChangesAsync(CancellationToken ct = default) => db.SaveChangesAsync(ct);
 }

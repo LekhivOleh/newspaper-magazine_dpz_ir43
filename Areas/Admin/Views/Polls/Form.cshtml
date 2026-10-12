@@ -1,0 +1,60 @@
+@model PollForm
+@using Microsoft.AspNetCore.Mvc.Rendering
+@{
+    var isNew = Model.Id is null;
+    ViewData["Title"] = isNew ? "Нове опитування" : "Редагування опитування";
+}
+
+<div class="admin-header">
+    <h1>@ViewData["Title"]</h1>
+</div>
+
+<form asp-action="@(isNew ? "Create" : "Edit")" asp-route-id="@Model.Id" method="post" class="admin-card admin-form" novalidate>
+    <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2"></div>
+    <input type="hidden" asp-for="HasVotes" />
+
+    <div class="mb-3">
+        <label asp-for="Question" class="form-label"></label>
+        <input asp-for="Question" class="form-control form-control-lg" autofocus />
+        <span asp-validation-for="Question" class="text-danger small"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Title" class="form-label"></label>
+        <input asp-for="Title" class="form-control" />
+        <span asp-validation-for="Title" class="text-danger small"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Description" class="form-label"></label>
+        <textarea asp-for="Description" class="form-control" rows="2"></textarea>
+    </div>
+    <div class="mb-3">
+        <label asp-for="OptionsText" class="form-label"></label>
+        <textarea asp-for="OptionsText" class="form-control font-monospace" rows="5" readonly="@Model.HasVotes"></textarea>
+        @if (Model.HasVotes)
+        {
+            <div class="form-text">Голосування вже почалося — варіанти змінювати не можна.</div>
+        }
+        else
+        {
+            <div class="form-text">Від 2 до 10 варіантів.</div>
+        }
+        <span asp-validation-for="OptionsText" class="text-danger small"></span>
+    </div>
+    <div class="form-check mb-3">
+        <input asp-for="AllowMultiple" class="form-check-input" disabled="@Model.HasVotes" />
+        <label asp-for="AllowMultiple" class="form-check-label"></label>
+        @if (Model.HasVotes)
+        {
+            <input type="hidden" name="AllowMultiple" value="@Model.AllowMultiple.ToString().ToLowerInvariant()" />
+        }
+    </div>
+    <div class="mb-4">
+        <label asp-for="ArticleId" class="form-label"></label>
+        <select asp-for="ArticleId" asp-items='(IEnumerable<SelectListItem>)ViewData["Articles"]!' class="form-select">
+            <option value="">— окреме опитування —</option>
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-dark">Зберегти</button>
+    <a asp-action="Index" class="btn btn-link">Скасувати</a>
+</form>

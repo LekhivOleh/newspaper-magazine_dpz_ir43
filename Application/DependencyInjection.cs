@@ -1,6 +1,7 @@
 using CURSOVA.Application.Articles;
 using CURSOVA.Application.Authors;
 using CURSOVA.Application.Categories;
+using CURSOVA.Application.Interactive;
 using CURSOVA.Application.Issues;
 
 namespace CURSOVA.Application;
@@ -13,6 +14,7 @@ public static class DependencyInjection
         services.AddScoped<IArticleService, ArticleService>();
         services.AddScoped<IAuthorService, AuthorService>();
         services.AddScoped<IIssueService, IssueService>();
+        services.AddScoped<IPollService, PollService>();
 
         return services;
     }

@@ -22,6 +22,7 @@ public static class DependencyInjection
         services.AddScoped<IAuthorRepository, AuthorRepository>();
         services.AddScoped<IArticleRepository, ArticleRepository>();
         services.AddScoped<IIssueRepository, IssueRepository>();
+        services.AddScoped<IInteractiveRepository, InteractiveRepository>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 
         services.AddIdentityServices();
@@ -60,6 +61,7 @@ public static class DependencyInjection
 
         services.AddHttpContextAccessor();
         services.AddScoped<ICurrentUser, HttpCurrentUser>();
+        services.AddScoped<IParticipantContext, CookieParticipantContext>();
     }
 
     private static Task ApiAwareRedirect(RedirectContext<CookieAuthenticationOptions> context, int apiStatusCode)

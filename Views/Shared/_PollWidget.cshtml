@@ -1,0 +1,62 @@
+@model PollDto
+@{
+    var error = TempData[$"PollError:{Model.Id}"] as string;
+    var returnUrl = Context.Request.Path + Context.Request.QueryString;
+    var inputType = Model.AllowMultiple ? "checkbox" : "radio";
+}
+
+<section class="poll" id="poll-@Model.Id">
+    <p class="poll-kicker">Опитування@(Model.IsActive ? "" : " · завершено")</p>
+    <h3 class="poll-question">@Model.Question</h3>
+    @if (Model.AllowMultiple && !Model.ShowResults)
+    {
+        <p class="poll-hint">Можна обрати кілька варіантів</p>
+    }
+
+    @if (error is not null)
+    {
+        <div class="alert alert-warning py-2 small">@error</div>
+    }
+
+    @if (Model.ShowResults)
+    {
+        <ul class="poll-results">
+            @foreach (var option in Model.Options)
+            {
+                <li class="@(option.IsMine ? "is-mine" : "")">
+                    <div class="poll-result-label">
+                        <span>@option.Text @(option.IsMine ? "✓" : "")</span>
+                        <strong>@option.Percent%</strong>
+                    </div>
+                    <div class="poll-bar"><span style="width: @option.Percent%"></span></div>
+                </li>
+            }
+        </ul>
+        <p class="poll-footer">
+            @UkrainianPlural.Format(Model.ParticipantCount, "учасник", "учасники", "учасників")
+            @if (Model.HasVoted)
+            {
+                <span>· дякуємо за ваш голос!</span>
+            }
+        </p>
+    }
+    else
+    {
+        <form asp-controller="Poll" asp-action="Vote" asp-route-id="@Model.Id" method="post">
+            <input type="hidden" name="returnUrl" value="@returnUrl" />
+            <div class="poll-options">
+                @foreach (var option in Model.Options)
+                {
+                    <label class="poll-option">
+                        <input type="@inputType" name="optionIds" value="@option.Id" />
+                        <span>@option.Text</span>
+                    </label>
+                }
+            </div>
+            <div class="poll-actions">
+                <button type="submit" class="btn btn-dark">Голосувати</button>
+                <span class="poll-footer">@UkrainianPlural.Format(Model.ParticipantCount, "учасник", "учасники", "учасників")</span>
+            </div>
+        </form>
+    }
+</section>

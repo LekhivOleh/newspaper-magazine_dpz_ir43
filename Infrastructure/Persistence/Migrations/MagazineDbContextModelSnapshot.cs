@@ -173,6 +173,117 @@ namespace CURSOVA.Infrastructure.Persistence.Migrations
                     b.ToTable("Categories");
                 });
 
+            modelBuilder.Entity("CURSOVA.Domain.Interactive.InteractiveElement", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("ArticleId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(1000)
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Kind")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("ParticipantCount")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ArticleId", "IsActive");
+
+                    b.ToTable("InteractiveElements", (string)null);
+
+                    b.HasDiscriminator<string>("Kind").HasValue("InteractiveElement");
+
+                    b.UseTphMappingStrategy();
+                });
+
+            modelBuilder.Entity("CURSOVA.Domain.Interactive.Polls.PollOption", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("PollId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Position")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("VoteCount")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PollId");
+
+                    b.ToTable("PollOptions", (string)null);
+                });
+
+            modelBuilder.Entity("CURSOVA.Domain.Interactive.Submission", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("ElementId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("MaxScore")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("ParticipantKey")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ResultKey")
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int?>("Score")
+                        .HasColumnType("INTEGER");
+
+                    b.PrimitiveCollection<string>("SelectedOptionIds")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("SubmittedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int?>("UserId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ElementId", "ParticipantKey");
+
+                    b.ToTable("Submissions");
+                });
+
             modelBuilder.Entity("CURSOVA.Domain.Issues.Issue", b =>
                 {
                     b.Property<int>("Id")
@@ -516,6 +627,21 @@ namespace CURSOVA.Infrastructure.Persistence.Migrations
                     b.HasDiscriminator().HasValue("video");
                 });
 
+            modelBuilder.Entity("CURSOVA.Domain.Interactive.Polls.Poll", b =>
+                {
+                    b.HasBaseType("CURSOVA.Domain.Interactive.InteractiveElement");
+
+                    b.Property<bool>("AllowMultiple")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Question")
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("TEXT");
+
+                    b.HasDiscriminator().HasValue("poll");
+                });
+
             modelBuilder.Entity("CURSOVA.Domain.Issues.ArticleItem", b =>
                 {
                     b.HasBaseType("CURSOVA.Domain.Issues.IssueComponent");
@@ -568,6 +694,32 @@ namespace CURSOVA.Infrastructure.Persistence.Migrations
                     b.HasOne("CURSOVA.Domain.Articles.Article", null)
                         .WithMany("Blocks")
                         .HasForeignKey("ArticleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("CURSOVA.Domain.Interactive.InteractiveElement", b =>
+                {
+                    b.HasOne("CURSOVA.Domain.Articles.Article", null)
+                        .WithMany()
+                        .HasForeignKey("ArticleId")
+                        .OnDelete(DeleteBehavior.SetNull);
+                });
+
+            modelBuilder.Entity("CURSOVA.Domain.Interactive.Polls.PollOption", b =>
+                {
+                    b.HasOne("CURSOVA.Domain.Interactive.Polls.Poll", null)
+                        .WithMany("Options")
+                        .HasForeignKey("PollId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("CURSOVA.Domain.Interactive.Submission", b =>
+                {
+                    b.HasOne("CURSOVA.Domain.Interactive.InteractiveElement", null)
+                        .WithMany()
+                        .HasForeignKey("ElementId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -685,6 +837,11 @@ namespace CURSOVA.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("CURSOVA.Domain.Issues.Issue", b =>
                 {
                     b.Navigation("Components");
+                });
+
+            modelBuilder.Entity("CURSOVA.Domain.Interactive.Polls.Poll", b =>
+                {
+                    b.Navigation("Options");
                 });
 
             modelBuilder.Entity("CURSOVA.Domain.Issues.IssueSection", b =>

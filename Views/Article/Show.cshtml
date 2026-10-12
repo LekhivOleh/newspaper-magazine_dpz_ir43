@@ -55,6 +55,11 @@
             }
         }
     </div>
+
+    @if (Model.Poll is { } poll)
+    {
+        <partial name="_PollWidget" model="poll" />
+    }
 </article>
 
 @if (Model.Related.Count > 0)

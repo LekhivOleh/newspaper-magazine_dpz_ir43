@@ -1,5 +1,6 @@
 using CURSOVA.Application.Articles;
 using CURSOVA.Application.Common;
+using CURSOVA.Application.Interactive;
 using CURSOVA.Domain.Articles;
 using CURSOVA.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -7,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace CURSOVA.Controllers;
 
 [Route("article")]
-public class ArticleController(IArticleService articles) : Controller
+public class ArticleController(IArticleService articles, IPollService polls) : Controller
 {
     [HttpGet("{slug}")]
     public async Task<IActionResult> Show(string slug, CancellationToken ct = default)
@@ -32,6 +33,7 @@ public class ArticleController(IArticleService articles) : Controller
 
         return View(new ArticlePageViewModel(
             article,
-            related.Items.Where(a => a.Id != article.Summary.Id).Take(3).ToList()));
+            related.Items.Where(a => a.Id != article.Summary.Id).Take(3).ToList(),
+            await polls.GetForArticleAsync(article.Summary.Id, ct)));
     }
 }

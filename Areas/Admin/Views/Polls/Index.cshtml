@@ -1,0 +1,70 @@
+@model IReadOnlyList<PollDto>
+@{
+    ViewData["Title"] = "Опитування";
+}
+
+<div class="admin-header">
+    <h1>Опитування</h1>
+    <a class="btn btn-dark" asp-action="Create">+ Нове опитування</a>
+</div>
+
+<div class="admin-card">
+    <table class="table admin-table mb-0">
+        <thead>
+            <tr><th>Питання</th><th>Результати</th><th>Учасників</th><th>Статус</th><th></th></tr>
+        </thead>
+        <tbody>
+            @if (Model.Count == 0)
+            {
+                <tr><td colspan="5" class="text-center text-muted py-4">Опитувань ще немає.</td></tr>
+            }
+            @foreach (var poll in Model)
+            {
+                var leader = poll.Options.MaxBy(o => o.Votes);
+                <tr>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@poll.Id" class="fw-semibold">@poll.Question</a>
+                        <div class="text-muted small">
+                            @poll.Title
+                            @if (poll.AllowMultiple) { <span>· кілька відповідей</span> }
+                            @if (poll.ArticleId is not null) { <span>· під статтею</span> }
+                        </div>
+                    </td>
+                    <td class="small" style="min-width: 14rem">
+                        @foreach (var option in poll.Options)
+                        {
+                            <div class="d-flex justify-content-between gap-2 @(option == leader && option.Votes > 0 ? "fw-semibold" : "text-muted")">
+                                <span>@option.Text</span><span>@option.Votes (@option.Percent%)</span>
+                            </div>
+                        }
+                    </td>
+                    <td>@poll.ParticipantCount</td>
+                    <td>
+                        @if (poll.IsActive)
+                        {
+                            <span class="badge text-bg-success">Активне</span>
+                        }
+                        else
+                        {
+                            <span class="badge text-bg-secondary">Закрите</span>
+                        }
+                    </td>
+                    <td class="text-end text-nowrap">
+                        <form asp-action="SetActive" asp-route-id="@poll.Id" method="post" class="d-inline">
+                            <input type="hidden" name="active" value="@(!poll.IsActive)" />
+                            <button type="submit" class="btn btn-sm btn-outline-secondary">@(poll.IsActive ? "Закрити" : "Відкрити")</button>
+                        </form>
+                        <a class="btn btn-sm btn-outline-dark" asp-action="Edit" asp-route-id="@poll.Id">Редагувати</a>
+                        <form asp-action="Delete" asp-route-id="@poll.Id" method="post" class="d-inline" data-confirm="Видалити опитування разом із голосами?">
+                            <button type="submit" class="btn btn-sm btn-outline-danger">Видалити</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@section Scripts {
+    <script src="~/js/admin.js" asp-append-version="true"></script>
+}

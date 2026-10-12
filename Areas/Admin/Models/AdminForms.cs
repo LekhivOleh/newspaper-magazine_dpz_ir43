@@ -3,6 +3,7 @@ using CURSOVA.Application.Articles;
 using CURSOVA.Application.Authors;
 using CURSOVA.Application.Categories;
 using CURSOVA.Application.Common;
+using CURSOVA.Application.Interactive;
 using CURSOVA.Application.Issues;
 using CURSOVA.Domain.Articles;
 using CURSOVA.Domain.Categories;
@@ -136,3 +137,46 @@ public class IssueForm
 public record SectionOption(int? Id, string Label);
 
 public record IssueStructurePage(IssueDetailsDto Issue, IReadOnlyList<SectionOption> Sections, IReadOnlyList<ArticleSummaryDto> Articles);
+
+public class PollForm
+{
+    public int? Id { get; set; }
+
+    [Required(ErrorMessage = "Вкажіть назву.")]
+    [MaxLength(200)]
+    [Display(Name = "Назва (для адмінки та списку)")]
+    public string Title { get; set; } = "";
+
+    [MaxLength(1000)]
+    [Display(Name = "Опис")]
+    public string? Description { get; set; }
+
+    [Required(ErrorMessage = "Вкажіть питання.")]
+    [MaxLength(300)]
+    [Display(Name = "Питання")]
+    public string Question { get; set; } = "";
+
+    [Required(ErrorMessage = "Вкажіть варіанти відповідей.")]
+    [Display(Name = "Варіанти відповідей (кожен з нового рядка)")]
+    public string OptionsText { get; set; } = "";
+
+    [Display(Name = "Дозволити кілька відповідей")]
+    public bool AllowMultiple { get; set; }
+
+    [Display(Name = "Показувати під статтею")]
+    public int? ArticleId { get; set; }
+
+    public bool HasVotes { get; set; }
+
+    public static PollForm From(PollDto p) => new()
+    {
+        Id = p.Id, Title = p.Title, Description = p.Description, Question = p.Question,
+        OptionsText = string.Join("\n", p.Options.Select(o => o.Text)), AllowMultiple = p.AllowMultiple,
+        ArticleId = p.ArticleId, HasVotes = p.ParticipantCount > 0
+    };
+
+    public SavePollRequest ToRequest() => new(
+        Title, Description, Question,
+        OptionsText.Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries),
+        AllowMultiple, ArticleId);
+}
