@@ -3,8 +3,10 @@ using CURSOVA.Application.Articles;
 using CURSOVA.Application.Authors;
 using CURSOVA.Application.Categories;
 using CURSOVA.Application.Common;
+using CURSOVA.Application.Issues;
 using CURSOVA.Domain.Articles;
 using CURSOVA.Domain.Categories;
+using CURSOVA.Domain.Issues;
 
 namespace CURSOVA.Areas.Admin.Models;
 
@@ -105,3 +107,32 @@ public record ArticleListPage(
     string? Search);
 
 public record DashboardPage(int Published, int Drafts, int Archived, int Categories, int Authors, IReadOnlyList<ArticleSummaryDto> Recent);
+
+public class IssueForm
+{
+    public int? Id { get; set; }
+
+    [Required(ErrorMessage = "Вкажіть назву.")]
+    [MaxLength(Issue.TitleMaxLength)]
+    [Display(Name = "Назва випуску")]
+    public string Title { get; set; } = "";
+
+    [Required(ErrorMessage = "Вкажіть опис.")]
+    [MaxLength(Issue.DescriptionMaxLength)]
+    [Display(Name = "Опис")]
+    public string Description { get; set; } = "";
+
+    [MaxLength(500)]
+    [Url(ErrorMessage = "Некоректне посилання.")]
+    [Display(Name = "Обкладинка (URL)")]
+    public string? CoverImageUrl { get; set; }
+
+    public static IssueForm From(IssueSummaryDto i) =>
+        new() { Id = i.Id, Title = i.Title, Description = i.Description, CoverImageUrl = i.CoverImageUrl };
+
+    public SaveIssueRequest ToRequest() => new(Title, Description, CoverImageUrl);
+}
+
+public record SectionOption(int? Id, string Label);
+
+public record IssueStructurePage(IssueDetailsDto Issue, IReadOnlyList<SectionOption> Sections, IReadOnlyList<ArticleSummaryDto> Articles);

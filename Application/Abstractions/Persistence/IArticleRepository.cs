@@ -9,6 +9,7 @@ public interface IArticleRepository : IRepository<Article>
     Task<Article?> GetBySlugWithContentAsync(string slug, CancellationToken ct = default);
     Task<bool> SlugExistsAsync(string slug, int? excludeId = null, CancellationToken ct = default);
     Task<PagedResult<Article>> SearchAsync(ArticleQuery query, CancellationToken ct = default);
+    Task<IReadOnlyList<Article>> GetByIdsAsync(IEnumerable<int> ids, CancellationToken ct = default);
 }
 
 public record ArticleQuery

@@ -1,0 +1,57 @@
+@model IReadOnlyList<IssueSummaryDto>
+@{
+    ViewData["Title"] = "Спецвипуски";
+}
+
+<div class="admin-header">
+    <h1>Спецвипуски</h1>
+    <a class="btn btn-dark" asp-action="Create">+ Новий випуск</a>
+</div>
+
+<div class="admin-card">
+    <table class="table admin-table mb-0">
+        <thead>
+            <tr><th>Назва</th><th>Матеріалів</th><th>Статус</th><th></th></tr>
+        </thead>
+        <tbody>
+            @if (Model.Count == 0)
+            {
+                <tr><td colspan="4" class="text-center text-muted py-4">Випусків ще немає.</td></tr>
+            }
+            @foreach (var issue in Model)
+            {
+                <tr>
+                    <td>
+                        <a asp-action="Structure" asp-route-id="@issue.Id" class="fw-semibold">@issue.Title</a>
+                        @if (issue.IsFeatured)
+                        {
+                            <span class="badge text-bg-warning ms-1">Журнал місяця</span>
+                        }
+                    </td>
+                    <td class="text-muted">@issue.ArticleCount</td>
+                    <td>
+                        @if (issue.IsPublished)
+                        {
+                            <span class="badge text-bg-success">Опубліковано</span>
+                        }
+                        else
+                        {
+                            <span class="badge text-bg-secondary">Чернетка</span>
+                        }
+                    </td>
+                    <td class="text-end text-nowrap">
+                        <a class="btn btn-sm btn-outline-dark" asp-action="Structure" asp-route-id="@issue.Id">Структура</a>
+                        <a class="btn btn-sm btn-outline-secondary" asp-action="Edit" asp-route-id="@issue.Id">Редагувати</a>
+                        <form asp-action="Delete" asp-route-id="@issue.Id" method="post" class="d-inline" data-confirm="Видалити випуск «@issue.Title»? Статті залишаться.">
+                            <button type="submit" class="btn btn-sm btn-outline-danger">Видалити</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@section Scripts {
+    <script src="~/js/admin.js" asp-append-version="true"></script>
+}

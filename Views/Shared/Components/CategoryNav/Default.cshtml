@@ -5,6 +5,10 @@
 }
 
 <ul class="navbar-nav me-auto">
+    <li class="nav-item">
+        <a class="nav-link nav-link-issues @(ViewContext.RouteData.Values["controller"] as string == "Issue" ? "active" : "")"
+           asp-controller="Issue" asp-action="Index">Випуски</a>
+    </li>
     @foreach (var category in Model)
     {
         var active = onCategoryPage && category.Slug == currentSlug;

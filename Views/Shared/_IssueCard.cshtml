@@ -1,0 +1,16 @@
+@model IssueSummaryDto
+
+<a class="issue-card" asp-controller="Issue" asp-action="Show" asp-route-slug="@Model.Slug">
+    @if (Model.CoverImageUrl is not null)
+    {
+        <img src="@Model.CoverImageUrl" alt="" loading="lazy" />
+    }
+    <div class="issue-card-overlay">
+        @if (Model.IsFeatured)
+        {
+            <span class="issue-badge">Журнал місяця</span>
+        }
+        <h3>@Model.Title</h3>
+        <span class="issue-count">@UkrainianPlural.Format(Model.ArticleCount, "матеріал", "матеріали", "матеріалів")</span>
+    </div>
+</a>

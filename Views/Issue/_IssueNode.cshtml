@@ -1,0 +1,54 @@
+@model IssueNodeDto
+@{
+    var depth = (int)ViewData["Depth"]!;
+}
+
+@switch (Model)
+{
+    case SectionNodeDto part:
+        <section class="issue-section depth-@depth" id="section-@part.Id">
+            @if (depth == 0)
+            {
+                <h2 class="section-title">@part.Title</h2>
+            }
+            else
+            {
+                <h3 class="issue-subsection-title">@part.Title</h3>
+            }
+
+            @{ var articles = part.Children.OfType<ArticleNodeDto>().ToList(); }
+            @if (articles.Count > 0)
+            {
+                <div class="article-grid">
+                    @foreach (var item in articles)
+                    {
+                        <div class="issue-item">
+                            <partial name="_ArticleCard" model="item.Article" />
+                            @if (item.EditorNote is not null)
+                            {
+                                <p class="editor-note">@item.EditorNote</p>
+                            }
+                        </div>
+                    }
+                </div>
+            }
+
+            @foreach (var child in part.Children.OfType<SectionNodeDto>())
+            {
+                <partial name="_IssueNode" model="child" view-data='new ViewDataDictionary(ViewData) { ["Depth"] = depth + 1 }' />
+            }
+        </section>
+        break;
+
+    case ArticleNodeDto item:
+        <div class="article-grid">
+            <div class="issue-item">
+                <partial name="_ArticleCard" model="item.Article" />
+                @if (item.EditorNote is not null)
+                {
+                    <p class="editor-note">@item.EditorNote</p>
+                }
+            </div>
+        </div>
+        break;
+}

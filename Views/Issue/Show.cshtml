@@ -1,0 +1,35 @@
+@model IssueDetailsDto
+@{
+    var issue = Model.Summary;
+    ViewData["Title"] = issue.Title;
+}
+
+<section class="issue-hero" style="@(issue.CoverImageUrl is null ? "" : $"--issue-cover: url('{issue.CoverImageUrl}')")">
+    <div class="issue-hero-content">
+        <p class="hero-kicker">@(issue.IsFeatured ? "Журнал місяця" : "Спецвипуск")</p>
+        <h1 class="issue-hero-title">@issue.Title</h1>
+        <p class="issue-hero-lead">@issue.Description</p>
+        <p class="issue-hero-meta">
+            @UkrainianPlural.Format(issue.ArticleCount, "матеріал", "матеріали", "матеріалів")
+            @if (issue.PublishedAt is { } published)
+            {
+                <span>· @published.ToLocalTime().ToString("MMMM yyyy")</span>
+            }
+        </p>
+    </div>
+</section>
+
+<nav class="issue-toc" aria-label="Зміст випуску">
+    <span class="issue-toc-label">Зміст:</span>
+    @foreach (var part in Model.Root.Children.OfType<SectionNodeDto>())
+    {
+        <a href="#section-@part.Id">@part.Title</a>
+    }
+</nav>
+
+<div class="issue-body">
+    @foreach (var node in Model.Root.Children)
+    {
+        <partial name="_IssueNode" model="node" view-data='new ViewDataDictionary(ViewData) { ["Depth"] = 0 }' />
+    }
+</div>

@@ -1,0 +1,48 @@
+@model SectionNodeDto
+@{
+    var issueId = (int)ViewData["IssueId"]!;
+    var children = Model.Children;
+}
+
+<ul class="structure-list">
+    @for (var i = 0; i < children.Count; i++)
+    {
+        var node = children[i];
+        <li class="structure-node @(node is SectionNodeDto ? "is-section" : "is-article")">
+            <div class="structure-row">
+                @switch (node)
+                {
+                    case SectionNodeDto part:
+                        <span class="structure-icon">▤</span>
+                        <strong>@part.Title</strong>
+                        <span class="text-muted small">(@part.ArticleCount)</span>
+                        break;
+                    case ArticleNodeDto item:
+                        <span class="structure-icon">¶</span>
+                        <span>@item.Article.Title</span>
+                        @if (item.EditorNote is not null)
+                        {
+                            <span class="text-muted small fst-italic">— @item.EditorNote</span>
+                        }
+                        break;
+                }
+                <span class="structure-actions">
+                    <form asp-action="MoveComponent" asp-route-id="@issueId" method="post" class="d-inline">
+                        <input type="hidden" name="componentId" value="@node.Id" />
+                        <button type="submit" name="delta" value="-1" class="btn btn-sm btn-light" title="Вище" disabled="@(i == 0)">↑</button>
+                        <button type="submit" name="delta" value="1" class="btn btn-sm btn-light" title="Нижче" disabled="@(i == children.Count - 1)">↓</button>
+                    </form>
+                    <form asp-action="RemoveComponent" asp-route-id="@issueId" method="post" class="d-inline"
+                          data-confirm="@(node is SectionNodeDto ? "Прибрати розділ разом із вмістом?" : "Прибрати статтю з випуску?")">
+                        <input type="hidden" name="componentId" value="@node.Id" />
+                        <button type="submit" class="btn btn-sm btn-light text-danger" title="Прибрати">✕</button>
+                    </form>
+                </span>
+            </div>
+            @if (node is SectionNodeDto childSection && childSection.Children.Count > 0)
+            {
+                <partial name="_StructureChildren" model="childSection" view-data="ViewData" />
+            }
+        </li>
+    }
+</ul>

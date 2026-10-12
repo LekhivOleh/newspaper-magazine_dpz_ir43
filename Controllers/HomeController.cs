@@ -1,11 +1,12 @@
 using System.Diagnostics;
 using CURSOVA.Application.Articles;
+using CURSOVA.Application.Issues;
 using CURSOVA.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CURSOVA.Controllers;
 
-public class HomeController(IArticleService articles) : Controller
+public class HomeController(IArticleService articles, IIssueService issues) : Controller
 {
     private const int PageSize = 9;
 
@@ -18,7 +19,9 @@ public class HomeController(IArticleService articles) : Controller
         var rest = featured is null ? result.Items : result.Items.Skip(1).ToList();
         var pager = new PagerViewModel(page, result.TotalPages, p => Url.Action(nameof(Index), new { page = p })!);
 
-        return View(new HomeViewModel(featured, rest, pager));
+        var featuredIssue = page == 1 ? await issues.GetFeaturedAsync(ct) : null;
+
+        return View(new HomeViewModel(featuredIssue, featured, rest, pager));
     }
 
     [HttpGet("/search")]

@@ -173,6 +173,84 @@ namespace CURSOVA.Infrastructure.Persistence.Migrations
                     b.ToTable("Categories");
                 });
 
+            modelBuilder.Entity("CURSOVA.Domain.Issues.Issue", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("CoverImageUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(600)
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsFeatured")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsPublished")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime?>("PublishedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Slug")
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Slug")
+                        .IsUnique();
+
+                    b.ToTable("Issues");
+                });
+
+            modelBuilder.Entity("CURSOVA.Domain.Issues.IssueComponent", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("IssueId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Kind")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int?>("ParentId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Position")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ParentId");
+
+                    b.HasIndex("IssueId", "ParentId", "Position");
+
+                    b.ToTable("IssueComponents", (string)null);
+
+                    b.HasDiscriminator<string>("Kind").HasValue("IssueComponent");
+
+                    b.UseTphMappingStrategy();
+                });
+
             modelBuilder.Entity("CURSOVA.Infrastructure.Identity.ApplicationUser", b =>
                 {
                     b.Property<int>("Id")
@@ -438,6 +516,34 @@ namespace CURSOVA.Infrastructure.Persistence.Migrations
                     b.HasDiscriminator().HasValue("video");
                 });
 
+            modelBuilder.Entity("CURSOVA.Domain.Issues.ArticleItem", b =>
+                {
+                    b.HasBaseType("CURSOVA.Domain.Issues.IssueComponent");
+
+                    b.Property<int>("ArticleId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("EditorNote")
+                        .HasMaxLength(300)
+                        .HasColumnType("TEXT");
+
+                    b.HasIndex("ArticleId");
+
+                    b.HasDiscriminator().HasValue("article");
+                });
+
+            modelBuilder.Entity("CURSOVA.Domain.Issues.IssueSection", b =>
+                {
+                    b.HasBaseType("CURSOVA.Domain.Issues.IssueComponent");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("TEXT");
+
+                    b.HasDiscriminator().HasValue("section");
+                });
+
             modelBuilder.Entity("CURSOVA.Domain.Articles.Article", b =>
                 {
                     b.HasOne("CURSOVA.Domain.Authors.Author", "Author")
@@ -464,6 +570,22 @@ namespace CURSOVA.Infrastructure.Persistence.Migrations
                         .HasForeignKey("ArticleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("CURSOVA.Domain.Issues.IssueComponent", b =>
+                {
+                    b.HasOne("CURSOVA.Domain.Issues.Issue", null)
+                        .WithMany("Components")
+                        .HasForeignKey("IssueId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CURSOVA.Domain.Issues.IssueSection", "Parent")
+                        .WithMany("Children")
+                        .HasForeignKey("ParentId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("Parent");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
@@ -546,9 +668,28 @@ namespace CURSOVA.Infrastructure.Persistence.Migrations
                     b.Navigation("Images");
                 });
 
+            modelBuilder.Entity("CURSOVA.Domain.Issues.ArticleItem", b =>
+                {
+                    b.HasOne("CURSOVA.Domain.Articles.Article", null)
+                        .WithMany()
+                        .HasForeignKey("ArticleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("CURSOVA.Domain.Articles.Article", b =>
                 {
                     b.Navigation("Blocks");
+                });
+
+            modelBuilder.Entity("CURSOVA.Domain.Issues.Issue", b =>
+                {
+                    b.Navigation("Components");
+                });
+
+            modelBuilder.Entity("CURSOVA.Domain.Issues.IssueSection", b =>
+                {
+                    b.Navigation("Children");
                 });
 #pragma warning restore 612, 618
         }

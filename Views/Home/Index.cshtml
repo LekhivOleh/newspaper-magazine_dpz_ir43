@@ -3,6 +3,15 @@
     ViewData["Title"] = "Головна";
 }
 
+@if (Model.FeaturedIssue is { } issue)
+{
+    <a class="issue-banner" asp-controller="Issue" asp-action="Show" asp-route-slug="@issue.Slug">
+        <span class="issue-badge">Журнал місяця</span>
+        <span class="issue-banner-title">@issue.Title</span>
+        <span class="issue-banner-cta">@UkrainianPlural.Format(issue.ArticleCount, "матеріал", "матеріали", "матеріалів") · Читати випуск →</span>
+    </a>
+}
+
 @if (Model.Featured is { } featured)
 {
     <section class="featured">

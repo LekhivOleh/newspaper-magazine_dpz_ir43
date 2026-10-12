@@ -1,6 +1,7 @@
 using CURSOVA.Domain.Articles.Building;
 using CURSOVA.Domain.Authors;
 using CURSOVA.Domain.Categories;
+using CURSOVA.Domain.Issues;
 using Microsoft.EntityFrameworkCore;
 
 namespace CURSOVA.Infrastructure.Persistence.Seeding;
@@ -10,7 +11,12 @@ public static class MagazineSeeder
     public static async Task InitializeAsync(MagazineDbContext db, CancellationToken ct = default)
     {
         await db.Database.MigrateAsync(ct);
+        await SeedCatalogAsync(db, ct);
+        await SeedIssuesAsync(db, ct);
+    }
 
+    private static async Task SeedCatalogAsync(MagazineDbContext db, CancellationToken ct)
+    {
         if (await db.Categories.AnyAsync(ct))
             return;
 
@@ -111,6 +117,40 @@ public static class MagazineSeeder
                     .AddText("Квантові комп'ютери сильні в моделюванні молекул і криптографії, але для повсякденних задач класичні процесори залишаться ефективнішими.", "Де це знадобиться"))
                 .Build());
 
+        await db.SaveChangesAsync(ct);
+    }
+
+    private static async Task SeedIssuesAsync(MagazineDbContext db, CancellationToken ct)
+    {
+        if (await db.Issues.AnyAsync(ct))
+            return;
+
+        var articles = await db.Articles.ToDictionaryAsync(a => a.Slug, a => a.Id, ct);
+        int Id(string slug) => articles[slug];
+
+        var issue = new Issue(
+            "Журнал місяця: Жовтень 2026",
+            "Головні теми місяця: як обрати техніку для навчання, куди рухається штучний інтелект і що чекає на ринок гаджетів.",
+            Img("issue-october"));
+
+        var main = issue.AddSection(issue.Root, "Головне");
+        issue.AddArticle(main, Id("iak-obraty-noutbuk-dlia-navchannia-u-2026-rotsi"), "Must-read для кожного студента перед новим семестром.");
+        issue.AddArticle(main, Id("5-krokiv-shchob-zakhystyty-svoi-akaunty-vzhe-sohodni"));
+
+        var future = issue.AddSection(issue.Root, "AI та майбутнє");
+        issue.AddArticle(future, Id("lokalni-ai-modeli-chy-varto-zapuskaty-neiromerezhu-vdoma"), "Ексклюзив для передплатників.");
+        var deepDive = issue.AddSection(future, "Глибоке занурення");
+        issue.AddArticle(deepDive, Id("kvantovi-kompiutery-prostymy-slovamy"));
+        issue.AddArticle(deepDive, Id("rynok-smart-hodynnykiv-shcho-bude-dali"));
+
+        var people = issue.AddSection(issue.Root, "Люди та залізо");
+        issue.AddArticle(people, Id("interviu-iak-indi-studiia-z-kyieva-robyt-ihry-dlia-vsoho-svitu"));
+        issue.AddArticle(people, Id("mekhanichni-klaviatury-haid-dlia-pochatkivtsiv"));
+
+        issue.Publish();
+        issue.Feature();
+
+        db.Issues.Add(issue);
         await db.SaveChangesAsync(ct);
     }
 

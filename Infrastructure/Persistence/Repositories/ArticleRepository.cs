@@ -21,6 +21,16 @@ public class ArticleRepository(MagazineDbContext db) : Repository<Article>(db), 
     public Task<bool> SlugExistsAsync(string slug, int? excludeId = null, CancellationToken ct = default) =>
         Set.AnyAsync(a => a.Slug == slug && a.Id != excludeId, ct);
 
+    public async Task<IReadOnlyList<Article>> GetByIdsAsync(IEnumerable<int> ids, CancellationToken ct = default)
+    {
+        var idList = ids.Distinct().ToList();
+        return await Set.AsNoTracking()
+            .Include(a => a.Category)
+            .Include(a => a.Author)
+            .Where(a => idList.Contains(a.Id))
+            .ToListAsync(ct);
+    }
+
     public async Task<PagedResult<Article>> SearchAsync(ArticleQuery query, CancellationToken ct = default)
     {
         var articles = Set.AsNoTracking()
