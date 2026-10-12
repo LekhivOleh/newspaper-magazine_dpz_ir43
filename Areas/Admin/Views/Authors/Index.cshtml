@@ -1,0 +1,43 @@
+@model IReadOnlyList<AuthorDto>
+@{
+    ViewData["Title"] = "Автори";
+}
+
+<div class="admin-header">
+    <h1>Автори</h1>
+    <a class="btn btn-dark" asp-action="Create">+ Новий автор</a>
+</div>
+
+<div class="admin-card">
+    <table class="table admin-table mb-0">
+        <thead>
+            <tr><th></th><th>Ім'я</th><th>Посада</th><th></th></tr>
+        </thead>
+        <tbody>
+            @foreach (var a in Model)
+            {
+                <tr>
+                    <td style="width: 3.5rem">
+                        @if (a.AvatarUrl is not null)
+                        {
+                            <img class="admin-avatar" src="@a.AvatarUrl" alt="" />
+                        }
+                    </td>
+                    <td><a asp-action="Edit" asp-route-id="@a.Id">@a.FullName</a></td>
+                    <td class="text-muted">@a.Position</td>
+                    <td class="text-end text-nowrap">
+                        <a class="btn btn-sm btn-outline-dark" asp-action="Edit" asp-route-id="@a.Id">Редагувати</a>
+                        <form asp-action="Delete" asp-route-id="@a.Id" method="post" class="d-inline"
+                              data-confirm="Видалити автора «@a.FullName»?">
+                            <button type="submit" class="btn btn-sm btn-outline-danger">Видалити</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@section Scripts {
+    <script src="~/js/admin.js" asp-append-version="true"></script>
+}

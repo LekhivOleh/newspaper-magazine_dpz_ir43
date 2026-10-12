@@ -12,13 +12,10 @@ namespace CURSOVA.Controllers.Api;
 public class ArticlesController(IArticleService articles, ICurrentUser currentUser) : ControllerBase
 {
     [HttpGet]
-    public Task<PagedResult<ArticleSummaryDto>> Search([FromQuery] ArticleFilter filter, CancellationToken ct)
-    {
-        if (!currentUser.IsAdmin)
-            filter = filter with { Status = ArticleStatus.Published };
-
-        return articles.SearchAsync(filter, ct);
-    }
+    public Task<PagedResult<ArticleSummaryDto>> Search([FromQuery] ArticleFilter filter, CancellationToken ct) =>
+        currentUser.IsAdmin
+            ? articles.SearchAllAsync(filter, ct)
+            : articles.SearchAsync(filter with { Status = ArticleStatus.Published }, ct);
 
     [HttpGet("{id:int}")]
     public async Task<ActionResult<ArticleDetailsDto>> Get(int id, CancellationToken ct) =>

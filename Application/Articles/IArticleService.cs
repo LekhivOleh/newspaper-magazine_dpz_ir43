@@ -5,6 +5,7 @@ namespace CURSOVA.Application.Articles;
 public interface IArticleService
 {
     Task<PagedResult<ArticleSummaryDto>> SearchAsync(ArticleFilter filter, CancellationToken ct = default);
+    Task<PagedResult<ArticleSummaryDto>> SearchAllAsync(ArticleFilter filter, CancellationToken ct = default);
     Task<ArticleDetailsDto> GetAsync(int id, CancellationToken ct = default);
     Task<ArticleDetailsDto> GetBySlugAsync(string slug, CancellationToken ct = default);
     Task<ArticleDetailsDto> CreateAsync(SaveArticleRequest request, CancellationToken ct = default);

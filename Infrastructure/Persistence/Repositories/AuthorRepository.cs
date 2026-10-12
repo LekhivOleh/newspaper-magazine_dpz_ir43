@@ -8,4 +8,7 @@ public class AuthorRepository(MagazineDbContext db) : Repository<Author>(db), IA
 {
     public override async Task<IReadOnlyList<Author>> ListAsync(CancellationToken ct = default) =>
         await Set.AsNoTracking().OrderBy(a => a.FullName).ToListAsync(ct);
+
+    public Task<bool> HasArticlesAsync(int authorId, CancellationToken ct = default) =>
+        Db.Articles.AnyAsync(a => a.AuthorId == authorId, ct);
 }

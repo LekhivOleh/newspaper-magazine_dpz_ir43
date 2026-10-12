@@ -1,0 +1,39 @@
+@model IReadOnlyList<CategoryDto>
+@{
+    ViewData["Title"] = "Рубрики";
+}
+
+<div class="admin-header">
+    <h1>Рубрики</h1>
+    <a class="btn btn-dark" asp-action="Create">+ Нова рубрика</a>
+</div>
+
+<div class="admin-card">
+    <table class="table admin-table mb-0">
+        <thead>
+            <tr><th>#</th><th>Назва</th><th>Slug</th><th>Опис</th><th></th></tr>
+        </thead>
+        <tbody>
+            @foreach (var c in Model)
+            {
+                <tr>
+                    <td class="text-muted">@c.SortOrder</td>
+                    <td><a asp-action="Edit" asp-route-id="@c.Id">@c.Name</a></td>
+                    <td><code>@c.Slug</code></td>
+                    <td class="text-muted small">@c.Description</td>
+                    <td class="text-end text-nowrap">
+                        <a class="btn btn-sm btn-outline-dark" asp-action="Edit" asp-route-id="@c.Id">Редагувати</a>
+                        <form asp-action="Delete" asp-route-id="@c.Id" method="post" class="d-inline"
+                              data-confirm="Видалити рубрику «@c.Name»?">
+                            <button type="submit" class="btn btn-sm btn-outline-danger">Видалити</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@section Scripts {
+    <script src="~/js/admin.js" asp-append-version="true"></script>
+}

@@ -1,0 +1,44 @@
+@model DashboardPage
+@{
+    ViewData["Title"] = "Огляд";
+}
+
+<div class="admin-header">
+    <h1>Огляд</h1>
+    <a class="btn btn-dark" asp-controller="Articles" asp-action="Create">+ Нова стаття</a>
+</div>
+
+<div class="stat-grid">
+    <a class="stat" asp-controller="Articles" asp-action="Index" asp-route-status="Published">
+        <span class="stat-value">@Model.Published</span><span class="stat-label">Опубліковано</span>
+    </a>
+    <a class="stat" asp-controller="Articles" asp-action="Index" asp-route-status="Draft">
+        <span class="stat-value">@Model.Drafts</span><span class="stat-label">Чернетки</span>
+    </a>
+    <a class="stat" asp-controller="Articles" asp-action="Index" asp-route-status="Archived">
+        <span class="stat-value">@Model.Archived</span><span class="stat-label">В архіві</span>
+    </a>
+    <a class="stat" asp-controller="Categories" asp-action="Index">
+        <span class="stat-value">@Model.Categories</span><span class="stat-label">Рубрик</span>
+    </a>
+    <a class="stat" asp-controller="Authors" asp-action="Index">
+        <span class="stat-value">@Model.Authors</span><span class="stat-label">Авторів</span>
+    </a>
+</div>
+
+<h2 class="admin-subtitle">Останні статті</h2>
+<div class="admin-card">
+    <table class="table admin-table mb-0">
+        <tbody>
+            @foreach (var a in Model.Recent)
+            {
+                <tr>
+                    <td><a asp-controller="Articles" asp-action="Edit" asp-route-id="@a.Id">@a.Title</a></td>
+                    <td class="text-muted">@a.Category.Name</td>
+                    <td><partial name="_StatusBadge" model="a.Status" /></td>
+                    <td class="text-muted text-end">@a.CreatedAt.ToLocalTime().ToString("d MMM yyyy")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

@@ -9,7 +9,13 @@ namespace CURSOVA.Application.Articles;
 
 public class ArticleService(IUnitOfWork uow) : IArticleService
 {
-    public async Task<PagedResult<ArticleSummaryDto>> SearchAsync(ArticleFilter filter, CancellationToken ct = default)
+    public Task<PagedResult<ArticleSummaryDto>> SearchAsync(ArticleFilter filter, CancellationToken ct = default) =>
+        QueryAsync(filter, filter.Status ?? ArticleStatus.Published, ct);
+
+    public Task<PagedResult<ArticleSummaryDto>> SearchAllAsync(ArticleFilter filter, CancellationToken ct = default) =>
+        QueryAsync(filter, filter.Status, ct);
+
+    private async Task<PagedResult<ArticleSummaryDto>> QueryAsync(ArticleFilter filter, ArticleStatus? status, CancellationToken ct)
     {
         var categoryId = filter.CategoryId;
         if (categoryId is null && !string.IsNullOrWhiteSpace(filter.Category))
@@ -24,7 +30,7 @@ public class ArticleService(IUnitOfWork uow) : IArticleService
             CategoryId = categoryId,
             AuthorId = filter.AuthorId,
             AccessLevel = filter.Access,
-            Status = filter.Status ?? ArticleStatus.Published,
+            Status = status,
             Search = filter.Search,
             Page = filter.Page,
             PageSize = filter.PageSize

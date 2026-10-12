@@ -1,0 +1,125 @@
+@model ArticleListPage
+@{
+    ViewData["Title"] = "Статті";
+    var returnUrl = Context.Request.Path + Context.Request.QueryString;
+}
+
+<div class="admin-header">
+    <h1>Статті</h1>
+    <a class="btn btn-dark" asp-action="Create">+ Нова стаття</a>
+</div>
+
+<form method="get" class="admin-filters">
+    <select name="status" class="form-select form-select-sm">
+        <option value="">Усі статуси</option>
+        @foreach (var status in Enum.GetValues<ArticleStatus>())
+        {
+            <option value="@status" selected="@(Model.Status == status)">@(status switch
+            {
+                ArticleStatus.Draft => "Чернетки",
+                ArticleStatus.Published => "Опубліковані",
+                _ => "Архів"
+            })</option>
+        }
+    </select>
+    <select name="categoryId" class="form-select form-select-sm">
+        <option value="">Усі рубрики</option>
+        @foreach (var c in Model.Categories)
+        {
+            <option value="@c.Id" selected="@(Model.CategoryId == c.Id)">@c.Name</option>
+        }
+    </select>
+    <input type="search" name="q" value="@Model.Search" class="form-control form-control-sm" placeholder="Пошук за заголовком" />
+    <button type="submit" class="btn btn-sm btn-dark">Фільтрувати</button>
+</form>
+
+<div class="admin-card">
+    <table class="table admin-table mb-0">
+        <thead>
+            <tr><th>Заголовок</th><th>Рубрика</th><th>Автор</th><th>Статус</th><th>Перегляди</th><th></th></tr>
+        </thead>
+        <tbody>
+            @if (Model.Articles.Items.Count == 0)
+            {
+                <tr><td colspan="6" class="text-center text-muted py-4">Нічого не знайдено.</td></tr>
+            }
+            @foreach (var a in Model.Articles.Items)
+            {
+                <tr>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@a.Id" class="fw-semibold">@a.Title</a>
+                        @if (a.AccessLevel == AccessLevel.Premium)
+                        {
+                            <span class="badge text-bg-warning ms-1">Premium</span>
+                        }
+                    </td>
+                    <td class="text-muted">@a.Category.Name</td>
+                    <td class="text-muted">@a.Author.FullName</td>
+                    <td><partial name="_StatusBadge" model="a.Status" /></td>
+                    <td class="text-muted">@a.ViewCount</td>
+                    <td class="text-end text-nowrap">
+                        <a class="btn btn-sm btn-outline-dark" asp-action="Content" asp-route-id="@a.Id">Контент</a>
+                        <div class="dropdown d-inline-block">
+                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">Дії</button>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" asp-action="Edit" asp-route-id="@a.Id">Редагувати</a></li>
+                                @if (a.Status == ArticleStatus.Published)
+                                {
+                                    <li><a class="dropdown-item" asp-area="" asp-controller="Article" asp-action="Show" asp-route-slug="@a.Slug" target="_blank">Відкрити на сайті ↗</a></li>
+                                }
+                                @if (a.Status != ArticleStatus.Published)
+                                {
+                                    <li>
+                                        <form asp-action="Publish" asp-route-id="@a.Id" method="post">
+                                            <input type="hidden" name="returnUrl" value="@returnUrl" />
+                                            <button type="submit" class="dropdown-item">Опублікувати</button>
+                                        </form>
+                                    </li>
+                                }
+                                @if (a.Status != ArticleStatus.Archived)
+                                {
+                                    <li>
+                                        <form asp-action="Archive" asp-route-id="@a.Id" method="post">
+                                            <input type="hidden" name="returnUrl" value="@returnUrl" />
+                                            <button type="submit" class="dropdown-item">В архів</button>
+                                        </form>
+                                    </li>
+                                }
+                                <li><hr class="dropdown-divider" /></li>
+                                <li>
+                                    <form asp-action="Delete" asp-route-id="@a.Id" method="post" data-confirm="Видалити статтю «@a.Title» назавжди?">
+                                        <button type="submit" class="dropdown-item text-danger">Видалити</button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@if (Model.Articles.TotalPages > 1)
+{
+    <nav class="d-flex justify-content-between align-items-center mt-3">
+        <span class="text-muted small">Усього: @Model.Articles.TotalCount</span>
+        <div class="btn-group">
+            @if (Model.Articles.HasPrevious)
+            {
+                <a class="btn btn-sm btn-outline-dark" asp-action="Index" asp-route-status="@Model.Status" asp-route-categoryId="@Model.CategoryId"
+                   asp-route-q="@Model.Search" asp-route-page="@(Model.Articles.Page - 1)">←</a>
+            }
+            <span class="btn btn-sm btn-outline-dark disabled">@Model.Articles.Page / @Model.Articles.TotalPages</span>
+            @if (Model.Articles.HasNext)
+            {
+                <a class="btn btn-sm btn-outline-dark" asp-action="Index" asp-route-status="@Model.Status" asp-route-categoryId="@Model.CategoryId"
+                   asp-route-q="@Model.Search" asp-route-page="@(Model.Articles.Page + 1)">→</a>
+            }
+        </div>
+    </nav>
+}
+
+@section Scripts {
+    <script src="~/js/admin.js" asp-append-version="true"></script>
+}

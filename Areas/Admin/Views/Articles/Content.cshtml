@@ -1,0 +1,54 @@
+@model ArticleDetailsDto
+@{
+    var article = Model.Summary;
+    ViewData["Title"] = $"Контент: {article.Title}";
+    var returnUrl = Context.Request.Path.ToString();
+}
+
+<div class="admin-header">
+    <div>
+        <p class="text-muted small mb-1">
+            <a asp-action="Index">Статті</a> / <a asp-action="Edit" asp-route-id="@article.Id">@article.Title</a>
+        </p>
+        <h1>Контент статті</h1>
+    </div>
+    <div class="d-flex gap-2 align-items-center">
+        <partial name="_StatusBadge" model="article.Status" />
+        @if (article.Status != ArticleStatus.Published)
+        {
+            <form asp-action="Publish" asp-route-id="@article.Id" method="post">
+                <input type="hidden" name="returnUrl" value="@returnUrl" />
+                <button type="submit" class="btn btn-success" data-requires-saved>Опублікувати</button>
+            </form>
+        }
+        else
+        {
+            <a class="btn btn-outline-dark" asp-area="" asp-controller="Article" asp-action="Show" asp-route-slug="@article.Slug" target="_blank">На сайті ↗</a>
+        }
+    </div>
+</div>
+
+<div id="content-editor" data-save-url="/api/articles/@article.Id/content">
+    <div class="editor-blocks" data-blocks></div>
+
+    <div class="editor-empty text-muted" data-empty>Контенту ще немає — додайте перший блок.</div>
+
+    <div class="editor-toolbar">
+        <span class="text-muted small me-2">Додати блок:</span>
+        <button type="button" class="btn btn-sm btn-outline-dark" data-add="text">¶ Текст</button>
+        <button type="button" class="btn btn-sm btn-outline-dark" data-add="image">▣ Фото</button>
+        <button type="button" class="btn btn-sm btn-outline-dark" data-add="video">▶ Відео</button>
+        <button type="button" class="btn btn-sm btn-outline-dark" data-add="gallery">▦ Галерея</button>
+    </div>
+
+    <div class="editor-savebar">
+        <span class="editor-status" data-status role="status"></span>
+        <button type="button" class="btn btn-dark" data-save>Зберегти контент</button>
+    </div>
+</div>
+
+<script type="application/json" id="initial-blocks">@Json.Serialize(Model.Blocks)</script>
+
+@section Scripts {
+    <script src="~/js/admin-content-editor.js" asp-append-version="true"></script>
+}

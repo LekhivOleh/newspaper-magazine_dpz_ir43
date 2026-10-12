@@ -1,0 +1,14 @@
+@model ArticleStatus
+
+@switch (Model)
+{
+    case ArticleStatus.Published:
+        <span class="badge text-bg-success">Опубліковано</span>
+        break;
+    case ArticleStatus.Draft:
+        <span class="badge text-bg-secondary">Чернетка</span>
+        break;
+    case ArticleStatus.Archived:
+        <span class="badge text-bg-dark">Архів</span>
+        break;
+}

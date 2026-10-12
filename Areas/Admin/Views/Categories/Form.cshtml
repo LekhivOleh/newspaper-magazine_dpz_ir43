@@ -1,0 +1,31 @@
+@model CategoryForm
+@{
+    var isNew = Model.Id is null;
+    ViewData["Title"] = isNew ? "Нова рубрика" : $"Рубрика «{Model.Name}»";
+}
+
+<div class="admin-header">
+    <h1>@ViewData["Title"]</h1>
+</div>
+
+<form asp-action="@(isNew ? "Create" : "Edit")" asp-route-id="@Model.Id" method="post" class="admin-card admin-form" novalidate>
+    <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2"></div>
+
+    <div class="mb-3">
+        <label asp-for="Name" class="form-label"></label>
+        <input asp-for="Name" class="form-control" autofocus />
+        <span asp-validation-for="Name" class="text-danger small"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Description" class="form-label"></label>
+        <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+        <span asp-validation-for="Description" class="text-danger small"></span>
+    </div>
+    <div class="mb-4">
+        <label asp-for="SortOrder" class="form-label"></label>
+        <input asp-for="SortOrder" class="form-control" style="max-width: 8rem" />
+    </div>
+
+    <button type="submit" class="btn btn-dark">Зберегти</button>
+    <a asp-action="Index" class="btn btn-link">Скасувати</a>
+</form>
