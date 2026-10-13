@@ -180,3 +180,36 @@ public class PollForm
         OptionsText.Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries),
         AllowMultiple, ArticleId);
 }
+
+public class QuizForm
+{
+    public int? Id { get; set; }
+
+    [Required(ErrorMessage = "Вкажіть назву.")]
+    [MaxLength(200)]
+    [Display(Name = "Назва тесту")]
+    public string Title { get; set; } = "";
+
+    [MaxLength(1000)]
+    [Display(Name = "Опис")]
+    public string? Description { get; set; }
+
+    [MaxLength(500)]
+    [Url(ErrorMessage = "Некоректне посилання.")]
+    [Display(Name = "Обкладинка (URL)")]
+    public string? CoverImageUrl { get; set; }
+
+    [Display(Name = "Тип тесту")]
+    public CURSOVA.Domain.Interactive.Quizzes.ScoringMode ScoringMode { get; set; }
+
+    [Display(Name = "Прив'язати до статті")]
+    public int? ArticleId { get; set; }
+
+    public static QuizForm From(QuizSummaryDto q) => new()
+    {
+        Id = q.Id, Title = q.Title, Description = q.Description, CoverImageUrl = q.CoverImageUrl,
+        ScoringMode = q.ScoringMode, ArticleId = q.ArticleId
+    };
+
+    public SaveQuizRequest ToRequest() => new(Title, Description, CoverImageUrl, ScoringMode, ArticleId);
+}

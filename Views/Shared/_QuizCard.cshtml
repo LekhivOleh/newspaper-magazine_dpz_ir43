@@ -1,0 +1,29 @@
+@using CURSOVA.Domain.Interactive.Quizzes
+@model QuizSummaryDto
+@{
+    var kind = Model.ScoringMode switch
+    {
+        ScoringMode.CorrectAnswers => "Тест на знання",
+        ScoringMode.Personality => "Хто ви?",
+        _ => "Самоперевірка"
+    };
+}
+
+<a class="quiz-card" asp-controller="Quiz" asp-action="Show" asp-route-id="@Model.Id">
+    @if (Model.CoverImageUrl is not null)
+    {
+        <img src="@Model.CoverImageUrl" alt="" loading="lazy" />
+    }
+    <div class="quiz-card-body">
+        <span class="kicker">@kind</span>
+        <h3>@Model.Title</h3>
+        @if (Model.Description is not null)
+        {
+            <p>@Model.Description</p>
+        }
+        <span class="quiz-card-meta">
+            @UkrainianPlural.Format(Model.QuestionCount, "питання", "питання", "питань")
+            · @UkrainianPlural.Format(Model.ParticipantCount, "проходження", "проходження", "проходжень")
+        </span>
+    </div>
+</a>

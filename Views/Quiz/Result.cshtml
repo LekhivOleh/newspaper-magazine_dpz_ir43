@@ -1,0 +1,55 @@
+@using CURSOVA.Domain.Interactive.Quizzes
+@model QuizResultDto
+@{
+    ViewData["Title"] = $"Результат: {Model.QuizTitle}";
+}
+
+<div class="quiz-page">
+    <a asp-action="Show" asp-route-id="@Model.QuizId" class="text-muted small">← @Model.QuizTitle</a>
+
+    <section class="quiz-result">
+        <p class="hero-kicker">Ваш результат</p>
+        <h1 class="quiz-result-title">@Model.OutcomeTitle</h1>
+
+        @switch (Model.ScoringMode)
+        {
+            case ScoringMode.CorrectAnswers:
+                <p class="quiz-score">@Model.Score з @Model.MaxScore правильних · @Model.Percent%</p>
+                break;
+            case ScoringMode.Points:
+                <p class="quiz-score">@Model.Score з @Model.MaxScore балів</p>
+                break;
+            default:
+                <p class="quiz-score">@Model.Score з @Model.MaxScore відповідей збіглися з цим результатом</p>
+                break;
+        }
+
+        @if (Model.OutcomeDescription is not null)
+        {
+            <p class="quiz-result-description">@Model.OutcomeDescription</p>
+        }
+
+        <a class="btn btn-outline-dark" asp-action="Show" asp-route-id="@Model.QuizId">Пройти ще раз</a>
+        <a class="btn btn-link" href="/interactive">Інші тести</a>
+    </section>
+
+    @if (Model.Review.Count > 0)
+    {
+        <section class="quiz-review">
+            <h2 class="section-title">Розбір відповідей</h2>
+            @foreach (var item in Model.Review)
+            {
+                <div class="quiz-review-item @(item.IsCorrect ? "is-correct" : "is-wrong")">
+                    <p class="fw-semibold mb-1">@(item.IsCorrect ? "✓" : "✗") @item.Question</p>
+                    <p class="mb-0 small">
+                        Ваша відповідь: @item.YourAnswer
+                        @if (!item.IsCorrect)
+                        {
+                            <span> · правильна: <strong>@item.CorrectAnswer</strong></span>
+                        }
+                    </p>
+                </div>
+            }
+        </section>
+    }
+</div>

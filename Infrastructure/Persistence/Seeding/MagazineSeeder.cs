@@ -2,6 +2,7 @@ using CURSOVA.Domain.Articles.Building;
 using CURSOVA.Domain.Authors;
 using CURSOVA.Domain.Categories;
 using CURSOVA.Domain.Interactive.Polls;
+using CURSOVA.Domain.Interactive.Quizzes;
 using CURSOVA.Domain.Issues;
 using Microsoft.EntityFrameworkCore;
 
@@ -15,6 +16,7 @@ public static class MagazineSeeder
         await SeedCatalogAsync(db, ct);
         await SeedIssuesAsync(db, ct);
         await SeedPollsAsync(db, ct);
+        await SeedQuizzesAsync(db, ct);
     }
 
     private static async Task SeedCatalogAsync(MagazineDbContext db, CancellationToken ct)
@@ -180,6 +182,125 @@ public static class MagazineSeeder
                 ["Смартфон", "Ноутбук", "Навушники", "Смарт-годинник", "Нічого не купував(-ла)"],
                 allowMultiple: true));
 
+        await db.SaveChangesAsync(ct);
+    }
+
+    private static async Task SeedQuizzesAsync(MagazineDbContext db, CancellationToken ct)
+    {
+        if (await db.InteractiveElements.OfType<Quiz>().AnyAsync(ct))
+            return;
+
+        var gadget = new Quiz("Який гаджет вам підходить?", ScoringMode.Personality,
+            "Чотири питання — і ми підкажемо, з яким пристроєм вам буде найкомфортніше.", Img("quiz-gadget"));
+        gadget.Define(ScoringMode.Personality,
+        [
+            new QuestionSpec("Де ви найчастіше працюєте або навчаєтесь?",
+            [
+                new OptionSpec("За столом, довгими сесіями", OutcomeKey: "laptop"),
+                new OptionSpec("На дивані або в ліжку", OutcomeKey: "tablet"),
+                new OptionSpec("Будь-де, на ходу", OutcomeKey: "phone"),
+                new OptionSpec("Я весь час у русі — тренування, прогулянки", OutcomeKey: "watch")
+            ]),
+            new QuestionSpec("Що для вас найважливіше?",
+            [
+                new OptionSpec("Продуктивність і зручна клавіатура", OutcomeKey: "laptop"),
+                new OptionSpec("Великий екран для фільмів і читання", OutcomeKey: "tablet"),
+                new OptionSpec("Камера і соцмережі", OutcomeKey: "phone"),
+                new OptionSpec("Здоров'я та сповіщення без відволікань", OutcomeKey: "watch")
+            ]),
+            new QuestionSpec("Ваш ідеальний вихідний?",
+            [
+                new OptionSpec("Нарешті доробити свій проєкт", OutcomeKey: "laptop"),
+                new OptionSpec("Серіал і комікси", OutcomeKey: "tablet"),
+                new OptionSpec("Зустрічі з друзями та фото", OutcomeKey: "phone"),
+                new OptionSpec("Похід або пробіжка", OutcomeKey: "watch")
+            ]),
+            new QuestionSpec("Скільки часу на день ви проводите з гаджетом?",
+            [
+                new OptionSpec("Майже весь робочий день", OutcomeKey: "laptop"),
+                new OptionSpec("Кілька годин увечері", OutcomeKey: "tablet"),
+                new OptionSpec("Постійно, але потроху", OutcomeKey: "phone"),
+                new OptionSpec("Він просто завжди на мені", OutcomeKey: "watch")
+            ])
+        ],
+        [
+            new OutcomeSpec("laptop", "Ноутбук", "Вам потрібен повноцінний робочий інструмент: велика клавіатура, потужність і багатозадачність."),
+            new OutcomeSpec("tablet", "Планшет", "Ви цінуєте комфорт і великий екран — для читання, серіалів і легкої роботи."),
+            new OutcomeSpec("phone", "Смартфон", "Ваш стиль — мобільність. Хороша камера й автономність важать більше за все."),
+            new OutcomeSpec("watch", "Смарт-годинник", "Ви в постійному русі, тож вам потрібен помічник, який не відволікає і стежить за здоров'ям.")
+        ]);
+
+        var knowledge = new Quiz("Наскільки добре ви знаєте технології?", ScoringMode.CorrectAnswers,
+            "П'ять питань про базові речі, які варто знати кожному.", Img("quiz-knowledge"));
+        knowledge.Define(ScoringMode.CorrectAnswers,
+        [
+            new QuestionSpec("Що означає абревіатура CPU?",
+            [
+                new OptionSpec("Central Processing Unit", IsCorrect: true),
+                new OptionSpec("Computer Power Unit"),
+                new OptionSpec("Central Program Utility")
+            ]),
+            new QuestionSpec("У яких одиницях зазвичай вказують тактову частоту процесора?",
+            [
+                new OptionSpec("Гігабайти"),
+                new OptionSpec("Гігагерци", IsCorrect: true),
+                new OptionSpec("Вати")
+            ]),
+            new QuestionSpec("Скільки бітів в одному байті?",
+            [
+                new OptionSpec("4"),
+                new OptionSpec("8", IsCorrect: true),
+                new OptionSpec("16")
+            ]),
+            new QuestionSpec("Що з переліченого є системою контролю версій?",
+            [
+                new OptionSpec("Git", IsCorrect: true),
+                new OptionSpec("Figma"),
+                new OptionSpec("Nginx")
+            ]),
+            new QuestionSpec("Який компонент зберігає дані після вимкнення живлення?",
+            [
+                new OptionSpec("Оперативна пам'ять (RAM)"),
+                new OptionSpec("Кеш процесора"),
+                new OptionSpec("SSD-накопичувач", IsCorrect: true)
+            ])
+        ],
+        [
+            new OutcomeSpec("beginner", "Початківець", "Є куди рости — почніть із наших гайдів у рубриці «Поради».", 0),
+            new OutcomeSpec("confident", "Впевнений користувач", "Ви добре орієнтуєтесь у базових речах. Ще трохи — і будете експертом!", 50),
+            new OutcomeSpec("expert", "Технічний експерт", "Чудовий результат! Вас складно здивувати технічними термінами.", 80)
+        ]);
+
+        var addiction = new Quiz("Наскільки ви залежні від гаджетів?", ScoringMode.Points,
+            "Чесно дайте відповідь на три питання — і дізнайтеся, чи не час для цифрового детоксу.", Img("quiz-detox"));
+        addiction.Define(ScoringMode.Points,
+        [
+            new QuestionSpec("Що ви робите першим після пробудження?",
+            [
+                new OptionSpec("Снідаю, телефон почекає", Points: 0),
+                new OptionSpec("Швидко гляну сповіщення", Points: 1),
+                new OptionSpec("Гортаю стрічку ще в ліжку", Points: 2)
+            ]),
+            new QuestionSpec("Як почуваєтеся, коли забули телефон удома?",
+            [
+                new OptionSpec("Спокійно — навіть приємно", Points: 0),
+                new OptionSpec("Трохи незручно", Points: 1),
+                new OptionSpec("Повертаюся по нього", Points: 2)
+            ]),
+            new QuestionSpec("Скільки годин на день у вас екранного часу?",
+            [
+                new OptionSpec("Менше 2 годин", Points: 0),
+                new OptionSpec("2–5 годин", Points: 1),
+                new OptionSpec("Більше 5 годин", Points: 2)
+            ])
+        ],
+        [
+            new OutcomeSpec("balanced", "Цифровий баланс", "Ви контролюєте гаджети, а не вони вас. Так тримати!", 0),
+            new OutcomeSpec("connected", "Постійно на зв'язку", "Гаджети важливі для вас, але ще не керують днем. Іноді робіть паузи.", 2),
+            new OutcomeSpec("detox", "Час для детоксу", "Схоже, екран забирає забагато часу. Спробуйте вихідний без телефону!", 5)
+        ]);
+
+        db.InteractiveElements.AddRange(gadget, knowledge, addiction);
         await db.SaveChangesAsync(ct);
     }
 

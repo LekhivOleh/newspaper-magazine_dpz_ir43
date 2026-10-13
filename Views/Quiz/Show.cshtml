@@ -1,0 +1,56 @@
+@model QuizDto
+@{
+    var quiz = Model.Summary;
+    ViewData["Title"] = quiz.Title;
+    var lastResult = ViewData["LastResult"] as QuizResultDto;
+    var error = TempData["QuizError"] as string;
+}
+
+<div class="quiz-page">
+    <a href="/interactive#quizzes" class="text-muted small">← Усі тести</a>
+
+    <header class="quiz-header">
+        <h1 class="page-title">@quiz.Title</h1>
+        @if (quiz.Description is not null)
+        {
+            <p class="hero-lead">@quiz.Description</p>
+        }
+        @if (lastResult is not null)
+        {
+            <p class="quiz-last-result">
+                Ваш попередній результат: <strong>@lastResult.OutcomeTitle</strong> ·
+                <a asp-action="Result" asp-route-id="@quiz.Id">переглянути</a>
+            </p>
+        }
+    </header>
+
+    @if (!quiz.IsActive)
+    {
+        <div class="alert alert-secondary">Цей тест зараз недоступний.</div>
+    }
+    else
+    {
+        @if (error is not null)
+        {
+            <div class="alert alert-warning">@error</div>
+        }
+
+        <form asp-action="Submit" asp-route-id="@quiz.Id" method="post" class="quiz-form">
+            @for (var i = 0; i < Model.Questions.Count; i++)
+            {
+                var question = Model.Questions[i];
+                <fieldset class="quiz-question">
+                    <legend><span class="quiz-number">@(i + 1)/@Model.Questions.Count</span> @question.Text</legend>
+                    @foreach (var option in question.Options)
+                    {
+                        <label class="poll-option">
+                            <input type="radio" name="q@(question.Id)" value="@option.Id" required />
+                            <span>@option.Text</span>
+                        </label>
+                    }
+                </fieldset>
+            }
+            <button type="submit" class="btn btn-dark btn-lg">Дізнатися результат</button>
+        </form>
+    }
+</div>

@@ -1,0 +1,37 @@
+@model InteractiveHubViewModel
+@{
+    ViewData["Title"] = "Інтерактив";
+}
+
+<header class="page-header">
+    <p class="hero-kicker">Інтерактив</p>
+    <h1 class="page-title">Тести та опитування</h1>
+    <p class="hero-lead">Перевірте свої знання, дізнайтеся щось нове про себе й поділіться думкою з редакцією.</p>
+</header>
+
+<section id="quizzes">
+    <h2 class="section-title">Тести</h2>
+    @if (Model.Quizzes.Count == 0)
+    {
+        <p class="empty-state">Тестів поки що немає.</p>
+    }
+    else
+    {
+        <div class="quiz-grid">
+            @foreach (var quiz in Model.Quizzes)
+            {
+                <partial name="_QuizCard" model="quiz" />
+            }
+        </div>
+    }
+</section>
+
+<section id="polls" class="section">
+    <h2 class="section-title">Опитування</h2>
+    <div class="poll-grid">
+        @foreach (var poll in Model.Polls)
+        {
+            <partial name="_PollWidget" model="poll" />
+        }
+    </div>
+</section>

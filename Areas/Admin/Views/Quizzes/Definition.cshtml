@@ -1,0 +1,49 @@
+@model QuizSummaryDto
+@{
+    ViewData["Title"] = $"Питання: {Model.Title}";
+    var locked = Model.ParticipantCount > 0;
+}
+
+<div class="admin-header">
+    <div>
+        <p class="text-muted small mb-1"><a asp-action="Index">Тести</a> / <a asp-action="Edit" asp-route-id="@Model.Id">@Model.Title</a></p>
+        <h1>Питання та результати</h1>
+    </div>
+    <a class="btn btn-outline-dark" asp-area="" asp-controller="Quiz" asp-action="Show" asp-route-id="@Model.Id" target="_blank">Відкрити тест ↗</a>
+</div>
+
+@if (locked)
+{
+    <div class="alert alert-warning">Тест уже пройшли @Model.ParticipantCount раз(и) — питання заблоковано, щоб не спотворити результати.</div>
+}
+
+<div id="quiz-editor" data-save-url="/api/quizzes/@Model.Id/definition" data-locked="@locked.ToString().ToLowerInvariant()">
+    <div class="admin-card p-3 mb-3 d-flex flex-wrap align-items-center gap-3">
+        <label class="fw-semibold" for="scoring-mode">Тип оцінювання:</label>
+        <select id="scoring-mode" class="form-select w-auto" data-mode>
+            <option value="CorrectAnswers">Правильні відповіді → рівень у %</option>
+            <option value="Personality">Тип особистості → найчастіший результат</option>
+            <option value="Points">Бали → діапазон за сумою</option>
+        </select>
+        <span class="text-muted small" data-mode-hint></span>
+    </div>
+
+    <h2 class="admin-subtitle">Результати</h2>
+    <div class="editor-blocks" data-outcomes></div>
+    <div class="editor-toolbar"><button type="button" class="btn btn-sm btn-outline-dark" data-add-outcome>+ Результат</button></div>
+
+    <h2 class="admin-subtitle">Питання</h2>
+    <div class="editor-blocks" data-questions></div>
+    <div class="editor-toolbar"><button type="button" class="btn btn-sm btn-outline-dark" data-add-question>+ Питання</button></div>
+
+    <div class="editor-savebar">
+        <span class="editor-status" data-status role="status"></span>
+        <button type="button" class="btn btn-dark" data-save>Зберегти тест</button>
+    </div>
+</div>
+
+<script type="application/json" id="initial-definition">@Json.Serialize(ViewData["Definition"])</script>
+
+@section Scripts {
+    <script src="~/js/admin-quiz-editor.js" asp-append-version="true"></script>
+}

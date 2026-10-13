@@ -1,6 +1,7 @@
 using CURSOVA.Application.Abstractions.Persistence;
 using CURSOVA.Domain.Interactive;
 using CURSOVA.Domain.Interactive.Polls;
+using CURSOVA.Domain.Interactive.Quizzes;
 using Microsoft.EntityFrameworkCore;
 
 namespace CURSOVA.Infrastructure.Persistence.Repositories;
@@ -23,6 +24,20 @@ public class InteractiveRepository(MagazineDbContext db) : Repository<Interactiv
             .Where(p => p.ArticleId == articleId && p.IsActive)
             .OrderByDescending(p => p.CreatedAt)
             .FirstOrDefaultAsync(ct);
+
+    public Task<Quiz?> GetQuizAsync(int id, CancellationToken ct = default) =>
+        Db.Set<Quiz>()
+            .Include(q => q.Questions).ThenInclude(q => q.Options)
+            .Include(q => q.Outcomes)
+            .AsSplitQuery()
+            .FirstOrDefaultAsync(q => q.Id == id, ct);
+
+    public async Task<IReadOnlyList<Quiz>> ListQuizzesAsync(bool activeOnly, CancellationToken ct = default) =>
+        await Db.Set<Quiz>().AsNoTracking()
+            .Include(q => q.Questions)
+            .Where(q => !activeOnly || q.IsActive)
+            .OrderByDescending(q => q.CreatedAt)
+            .ToListAsync(ct);
 
     public Task<Submission?> GetLatestSubmissionAsync(int elementId, string participantKey, CancellationToken ct = default) =>
         Db.Set<Submission>().AsNoTracking()

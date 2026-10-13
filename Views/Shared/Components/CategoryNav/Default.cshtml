@@ -10,8 +10,8 @@
            asp-controller="Issue" asp-action="Index">Випуски</a>
     </li>
     <li class="nav-item">
-        <a class="nav-link @(ViewContext.RouteData.Values["controller"] as string == "Poll" ? "active" : "")"
-           asp-controller="Poll" asp-action="Index">Опитування</a>
+        <a class="nav-link @(ViewContext.RouteData.Values["controller"] as string is "Interactive" or "Quiz" or "Poll" ? "active" : "")"
+           asp-controller="Interactive" asp-action="Index">Інтерактив</a>
     </li>
     @foreach (var category in Model)
     {

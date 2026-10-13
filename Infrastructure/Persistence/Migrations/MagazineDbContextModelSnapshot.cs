@@ -243,6 +243,100 @@ namespace CURSOVA.Infrastructure.Persistence.Migrations
                     b.ToTable("PollOptions", (string)null);
                 });
 
+            modelBuilder.Entity("CURSOVA.Domain.Interactive.Quizzes.QuizOption", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsCorrect")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("OutcomeKey")
+                        .HasMaxLength(50)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Points")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Position")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("QuestionId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("QuestionId");
+
+                    b.ToTable("QuizOptions", (string)null);
+                });
+
+            modelBuilder.Entity("CURSOVA.Domain.Interactive.Quizzes.QuizOutcome", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(1000)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Key")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Position")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("QuizId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Threshold")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("QuizId");
+
+                    b.ToTable("QuizOutcomes", (string)null);
+                });
+
+            modelBuilder.Entity("CURSOVA.Domain.Interactive.Quizzes.QuizQuestion", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Position")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("QuizId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("QuizId");
+
+                    b.ToTable("QuizQuestions", (string)null);
+                });
+
             modelBuilder.Entity("CURSOVA.Domain.Interactive.Submission", b =>
                 {
                     b.Property<int>("Id")
@@ -642,6 +736,22 @@ namespace CURSOVA.Infrastructure.Persistence.Migrations
                     b.HasDiscriminator().HasValue("poll");
                 });
 
+            modelBuilder.Entity("CURSOVA.Domain.Interactive.Quizzes.Quiz", b =>
+                {
+                    b.HasBaseType("CURSOVA.Domain.Interactive.InteractiveElement");
+
+                    b.Property<string>("CoverImageUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ScoringMode")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("TEXT");
+
+                    b.HasDiscriminator().HasValue("quiz");
+                });
+
             modelBuilder.Entity("CURSOVA.Domain.Issues.ArticleItem", b =>
                 {
                     b.HasBaseType("CURSOVA.Domain.Issues.IssueComponent");
@@ -711,6 +821,33 @@ namespace CURSOVA.Infrastructure.Persistence.Migrations
                     b.HasOne("CURSOVA.Domain.Interactive.Polls.Poll", null)
                         .WithMany("Options")
                         .HasForeignKey("PollId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("CURSOVA.Domain.Interactive.Quizzes.QuizOption", b =>
+                {
+                    b.HasOne("CURSOVA.Domain.Interactive.Quizzes.QuizQuestion", null)
+                        .WithMany("Options")
+                        .HasForeignKey("QuestionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("CURSOVA.Domain.Interactive.Quizzes.QuizOutcome", b =>
+                {
+                    b.HasOne("CURSOVA.Domain.Interactive.Quizzes.Quiz", null)
+                        .WithMany("Outcomes")
+                        .HasForeignKey("QuizId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("CURSOVA.Domain.Interactive.Quizzes.QuizQuestion", b =>
+                {
+                    b.HasOne("CURSOVA.Domain.Interactive.Quizzes.Quiz", null)
+                        .WithMany("Questions")
+                        .HasForeignKey("QuizId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -834,6 +971,11 @@ namespace CURSOVA.Infrastructure.Persistence.Migrations
                     b.Navigation("Blocks");
                 });
 
+            modelBuilder.Entity("CURSOVA.Domain.Interactive.Quizzes.QuizQuestion", b =>
+                {
+                    b.Navigation("Options");
+                });
+
             modelBuilder.Entity("CURSOVA.Domain.Issues.Issue", b =>
                 {
                     b.Navigation("Components");
@@ -842,6 +984,13 @@ namespace CURSOVA.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("CURSOVA.Domain.Interactive.Polls.Poll", b =>
                 {
                     b.Navigation("Options");
+                });
+
+            modelBuilder.Entity("CURSOVA.Domain.Interactive.Quizzes.Quiz", b =>
+                {
+                    b.Navigation("Outcomes");
+
+                    b.Navigation("Questions");
                 });
 
             modelBuilder.Entity("CURSOVA.Domain.Issues.IssueSection", b =>

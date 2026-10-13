@@ -1,0 +1,63 @@
+@using CURSOVA.Domain.Interactive.Quizzes
+@model IReadOnlyList<QuizSummaryDto>
+@{
+    ViewData["Title"] = "Тести";
+}
+
+<div class="admin-header">
+    <h1>Тести</h1>
+    <a class="btn btn-dark" asp-action="Create">+ Новий тест</a>
+</div>
+
+<div class="admin-card">
+    <table class="table admin-table mb-0">
+        <thead>
+            <tr><th>Назва</th><th>Тип</th><th>Питань</th><th>Проходжень</th><th>Статус</th><th></th></tr>
+        </thead>
+        <tbody>
+            @if (Model.Count == 0)
+            {
+                <tr><td colspan="6" class="text-center text-muted py-4">Тестів ще немає.</td></tr>
+            }
+            @foreach (var quiz in Model)
+            {
+                <tr>
+                    <td><a asp-action="Definition" asp-route-id="@quiz.Id" class="fw-semibold">@quiz.Title</a></td>
+                    <td class="text-muted small">@(quiz.ScoringMode switch
+                    {
+                        ScoringMode.CorrectAnswers => "Правильні відповіді",
+                        ScoringMode.Personality => "Тип особистості",
+                        _ => "Бали"
+                    })</td>
+                    <td>@quiz.QuestionCount</td>
+                    <td>@quiz.ParticipantCount</td>
+                    <td>
+                        @if (quiz.IsActive)
+                        {
+                            <span class="badge text-bg-success">Активний</span>
+                        }
+                        else
+                        {
+                            <span class="badge text-bg-secondary">Прихований</span>
+                        }
+                    </td>
+                    <td class="text-end text-nowrap">
+                        <a class="btn btn-sm btn-outline-dark" asp-action="Definition" asp-route-id="@quiz.Id">Питання</a>
+                        <a class="btn btn-sm btn-outline-secondary" asp-action="Edit" asp-route-id="@quiz.Id">Опис</a>
+                        <form asp-action="SetActive" asp-route-id="@quiz.Id" method="post" class="d-inline">
+                            <input type="hidden" name="active" value="@(!quiz.IsActive)" />
+                            <button type="submit" class="btn btn-sm btn-outline-secondary">@(quiz.IsActive ? "Приховати" : "Відкрити")</button>
+                        </form>
+                        <form asp-action="Delete" asp-route-id="@quiz.Id" method="post" class="d-inline" data-confirm="Видалити тест разом із результатами?">
+                            <button type="submit" class="btn btn-sm btn-outline-danger">Видалити</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@section Scripts {
+    <script src="~/js/admin.js" asp-append-version="true"></script>
+}
