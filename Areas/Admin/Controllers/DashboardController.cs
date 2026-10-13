@@ -1,13 +1,14 @@
 using CURSOVA.Application.Articles;
 using CURSOVA.Application.Authors;
 using CURSOVA.Application.Categories;
+using CURSOVA.Application.Comments;
 using CURSOVA.Areas.Admin.Models;
 using CURSOVA.Domain.Articles;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CURSOVA.Areas.Admin.Controllers;
 
-public class DashboardController(IArticleService articles, ICategoryService categories, IAuthorService authors) : AdminController
+public class DashboardController(IArticleService articles, ICategoryService categories, IAuthorService authors, ICommentService comments) : AdminController
 {
     public async Task<IActionResult> Index(CancellationToken ct)
     {
@@ -22,6 +23,7 @@ public class DashboardController(IArticleService articles, ICategoryService cate
             await CountAsync(ArticleStatus.Archived),
             (await categories.ListAsync(ct)).Count,
             (await authors.ListAsync(ct)).Count,
+            await comments.CountPendingAsync(ct),
             recent.Items));
     }
 }

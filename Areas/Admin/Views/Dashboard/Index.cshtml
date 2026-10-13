@@ -18,6 +18,9 @@
     <a class="stat" asp-controller="Articles" asp-action="Index" asp-route-status="Archived">
         <span class="stat-value">@Model.Archived</span><span class="stat-label">В архіві</span>
     </a>
+    <a class="stat @(Model.PendingComments > 0 ? "stat-alert" : "")" asp-controller="Comments" asp-action="Index">
+        <span class="stat-value">@Model.PendingComments</span><span class="stat-label">Коментарів на модерації</span>
+    </a>
     <a class="stat" asp-controller="Categories" asp-action="Index">
         <span class="stat-value">@Model.Categories</span><span class="stat-label">Рубрик</span>
     </a>

@@ -23,6 +23,7 @@ public static class DependencyInjection
         services.AddScoped<IArticleRepository, ArticleRepository>();
         services.AddScoped<IIssueRepository, IssueRepository>();
         services.AddScoped<IInteractiveRepository, InteractiveRepository>();
+        services.AddScoped<ICommentRepository, CommentRepository>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 
         services.AddIdentityServices();
@@ -46,6 +47,7 @@ public static class DependencyInjection
             })
             .AddEntityFrameworkStores<MagazineDbContext>()
             .AddDefaultTokenProviders()
+            .AddClaimsPrincipalFactory<AppClaimsPrincipalFactory>()
             .AddErrorDescriber<UkrainianIdentityErrorDescriber>();
 
         services.ConfigureApplicationCookie(options =>

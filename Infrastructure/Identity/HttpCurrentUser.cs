@@ -12,4 +12,7 @@ public class HttpCurrentUser(IHttpContextAccessor accessor) : ICurrentUser
     public bool IsAuthenticated => Principal?.Identity?.IsAuthenticated == true;
 
     public bool IsAdmin => Principal?.IsInRole(Roles.Admin) == true;
+
+    public string? DisplayName =>
+        Principal?.FindFirstValue(AppClaimsPrincipalFactory.DisplayNameClaim) ?? Principal?.Identity?.Name;
 }

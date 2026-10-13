@@ -107,7 +107,7 @@ public record ArticleListPage(
     int? CategoryId,
     string? Search);
 
-public record DashboardPage(int Published, int Drafts, int Archived, int Categories, int Authors, IReadOnlyList<ArticleSummaryDto> Recent);
+public record DashboardPage(int Published, int Drafts, int Archived, int Categories, int Authors, int PendingComments, IReadOnlyList<ArticleSummaryDto> Recent);
 
 public class IssueForm
 {

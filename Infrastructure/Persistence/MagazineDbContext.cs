@@ -2,6 +2,7 @@ using CURSOVA.Domain.Articles;
 using CURSOVA.Domain.Articles.Blocks;
 using CURSOVA.Domain.Authors;
 using CURSOVA.Domain.Categories;
+using CURSOVA.Domain.Comments;
 using CURSOVA.Domain.Interactive;
 using CURSOVA.Domain.Issues;
 using CURSOVA.Infrastructure.Identity;
@@ -21,6 +22,7 @@ public class MagazineDbContext(DbContextOptions<MagazineDbContext> options)
     public DbSet<Issue> Issues => Set<Issue>();
     public DbSet<InteractiveElement> InteractiveElements => Set<InteractiveElement>();
     public DbSet<Submission> Submissions => Set<Submission>();
+    public DbSet<Comment> Comments => Set<Comment>();
 
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
     {

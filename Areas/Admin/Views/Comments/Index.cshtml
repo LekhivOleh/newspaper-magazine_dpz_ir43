@@ -1,0 +1,95 @@
+@using CURSOVA.Application.Comments
+@using CURSOVA.Application.Common
+@using CURSOVA.Domain.Comments
+@model PagedResult<CommentDto>
+@{
+    ViewData["Title"] = "Коментарі";
+    var status = ViewData["Status"] as CommentStatus?;
+    var returnUrl = Context.Request.Path + Context.Request.QueryString;
+    string Tab(CommentStatus? s) => status == s ? "btn-dark" : "btn-outline-dark";
+}
+
+<div class="admin-header">
+    <h1>Коментарі</h1>
+    <div class="btn-group">
+        <a class="btn btn-sm @Tab(CommentStatus.Pending)" asp-action="Index" asp-route-status="Pending">На модерації</a>
+        <a class="btn btn-sm @Tab(CommentStatus.Published)" asp-action="Index" asp-route-status="Published">Опубліковані</a>
+        <a class="btn btn-sm @Tab(CommentStatus.Rejected)" asp-action="Index" asp-route-status="Rejected">Відхилені</a>
+        <a class="btn btn-sm @Tab(null)" asp-action="Index" asp-route-all="true">Усі</a>
+    </div>
+</div>
+
+@if (Model.Items.Count == 0)
+{
+    <div class="admin-card p-5 text-center text-muted">Тут порожньо — модерувати нічого.</div>
+}
+
+<div class="d-flex flex-column gap-2">
+    @foreach (var c in Model.Items)
+    {
+        <div class="admin-card p-3">
+            <div class="d-flex flex-wrap gap-2 align-items-center small mb-2">
+                <strong>@c.AuthorName</strong>
+                <span class="text-muted">@c.CreatedAt.ToLocalTime().ToString("d MMM yyyy, HH:mm")</span>
+                <a class="text-muted" href="/api/articles/@c.ArticleId" target="_blank">стаття #@c.ArticleId</a>
+                @switch (c.Status)
+                {
+                    case CommentStatus.Pending:
+                        <span class="badge text-bg-warning">на модерації</span>
+                        break;
+                    case CommentStatus.Published:
+                        <span class="badge text-bg-success">опубліковано</span>
+                        break;
+                    default:
+                        <span class="badge text-bg-secondary">відхилено</span>
+                        break;
+                }
+                @if (c.ModerationNote is not null)
+                {
+                    <span class="text-muted fst-italic">— @c.ModerationNote</span>
+                }
+            </div>
+            <p class="mb-3" style="white-space: pre-line">@c.Body</p>
+            <div class="d-flex flex-wrap gap-2">
+                @if (c.Status != CommentStatus.Published)
+                {
+                    <form asp-action="Approve" asp-route-id="@c.Id" method="post">
+                        <input type="hidden" name="returnUrl" value="@returnUrl" />
+                        <button type="submit" class="btn btn-sm btn-success">Опублікувати</button>
+                    </form>
+                }
+                @if (c.Status != CommentStatus.Rejected)
+                {
+                    <form asp-action="Reject" asp-route-id="@c.Id" method="post" class="d-flex gap-1">
+                        <input type="hidden" name="returnUrl" value="@returnUrl" />
+                        <input name="reason" class="form-control form-control-sm" placeholder="Причина (необов'язково)" />
+                        <button type="submit" class="btn btn-sm btn-outline-secondary">Відхилити</button>
+                    </form>
+                }
+                <form asp-action="Delete" asp-route-id="@c.Id" method="post" data-confirm="Видалити коментар назавжди?">
+                    <input type="hidden" name="returnUrl" value="@returnUrl" />
+                    <button type="submit" class="btn btn-sm btn-outline-danger">Видалити</button>
+                </form>
+            </div>
+        </div>
+    }
+</div>
+
+@if (Model.TotalPages > 1)
+{
+    <nav class="d-flex justify-content-center gap-2 mt-3">
+        @if (Model.HasPrevious)
+        {
+            <a class="btn btn-sm btn-outline-dark" asp-action="Index" asp-route-status="@status" asp-route-all="@(status is null)" asp-route-page="@(Model.Page - 1)">←</a>
+        }
+        <span class="btn btn-sm disabled">@Model.Page / @Model.TotalPages</span>
+        @if (Model.HasNext)
+        {
+            <a class="btn btn-sm btn-outline-dark" asp-action="Index" asp-route-status="@status" asp-route-all="@(status is null)" asp-route-page="@(Model.Page + 1)">→</a>
+        }
+    </nav>
+}
+
+@section Scripts {
+    <script src="~/js/admin.js" asp-append-version="true"></script>
+}

@@ -60,6 +60,8 @@
     {
         <partial name="_PollWidget" model="poll" />
     }
+
+    <partial name="_Comments" model="(Model.Article.Summary.Id, Model.Comments)" />
 </article>
 
 @if (Model.Related.Count > 0)

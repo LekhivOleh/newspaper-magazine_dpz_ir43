@@ -1,0 +1,70 @@
+@using CURSOVA.Application.Comments
+@using CURSOVA.Domain.Comments
+@model (int ArticleId, IReadOnlyList<CommentDto> Comments)
+@{
+    var message = TempData["CommentMessage"] as string;
+    var draft = TempData["CommentDraft"] as string;
+    var returnUrl = Context.Request.Path.ToString();
+    var published = Model.Comments.Count(c => c.Status == CommentStatus.Published);
+}
+
+<section class="comments" id="comments">
+    <h2 class="section-title">Коментарі <span class="comments-count">@published</span></h2>
+
+    @if (message is not null)
+    {
+        <div class="alert alert-warning py-2">@message</div>
+    }
+
+    @if (User.Identity?.IsAuthenticated == true)
+    {
+        <form method="post" action="/article/@Model.ArticleId/comments" class="comment-form">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="returnUrl" value="@returnUrl" />
+            <textarea name="body" class="form-control" rows="3" maxlength="2000" required
+                      placeholder="Поділіться думкою…">@draft</textarea>
+            <div class="comment-form-footer">
+                <span class="text-muted small">Будьте ввічливими. Коментарі з посиланнями перевіряє модератор.</span>
+                <button type="submit" class="btn btn-dark btn-sm">Надіслати</button>
+            </div>
+        </form>
+    }
+    else
+    {
+        <p class="comment-login">
+            <a asp-controller="Account" asp-action="Login" asp-route-returnUrl="@(returnUrl + "#comments")">Увійдіть</a>,
+            щоб залишити коментар.
+        </p>
+    }
+
+    @if (Model.Comments.Count == 0)
+    {
+        <p class="text-muted">Коментарів ще немає — будьте першим.</p>
+    }
+
+    <ol class="comment-list">
+        @foreach (var comment in Model.Comments)
+        {
+            <li class="comment @(comment.Status == CommentStatus.Pending ? "is-pending" : "")">
+                <div class="comment-meta">
+                    <span class="comment-avatar">@comment.AuthorName[..1].ToUpperInvariant()</span>
+                    <strong>@comment.AuthorName</strong>
+                    <time datetime="@comment.CreatedAt.ToString("O")">@comment.CreatedAt.ToLocalTime().ToString("d MMMM, HH:mm")</time>
+                    @if (comment.Status == CommentStatus.Pending)
+                    {
+                        <span class="badge text-bg-warning">на модерації</span>
+                    }
+                    @if (comment.IsMine || User.IsInRole("Admin"))
+                    {
+                        <form method="post" action="/comments/@comment.Id/delete" class="ms-auto" onsubmit="return confirm('Видалити коментар?')">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="returnUrl" value="@returnUrl" />
+                            <button type="submit" class="btn btn-link btn-sm p-0 text-muted">видалити</button>
+                        </form>
+                    }
+                </div>
+                <p class="comment-body">@comment.Body</p>
+            </li>
+        }
+    </ol>
+</section>

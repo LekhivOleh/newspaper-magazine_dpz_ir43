@@ -378,3 +378,8 @@ a {
 .structure-row:hover .structure-actions {
     opacity: 1;
 }
+
+.stat-alert {
+    border-color: #f0ad4e;
+    background: #fffaf0;
+}

@@ -7,6 +7,7 @@ public interface IUnitOfWork
     IArticleRepository Articles { get; }
     IIssueRepository Issues { get; }
     IInteractiveRepository Interactive { get; }
+    ICommentRepository Comments { get; }
 
     Task<int> SaveChangesAsync(CancellationToken ct = default);
 }

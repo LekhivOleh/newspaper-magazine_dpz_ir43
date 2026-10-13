@@ -1,4 +1,5 @@
 using CURSOVA.Application.Articles;
+using CURSOVA.Application.Comments;
 using CURSOVA.Application.Common;
 using CURSOVA.Application.Interactive;
 using CURSOVA.Domain.Articles;
@@ -8,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace CURSOVA.Controllers;
 
 [Route("article")]
-public class ArticleController(IArticleService articles, IPollService polls) : Controller
+public class ArticleController(IArticleService articles, IPollService polls, ICommentService comments) : Controller
 {
     [HttpGet("{slug}")]
     public async Task<IActionResult> Show(string slug, CancellationToken ct = default)
@@ -34,6 +35,7 @@ public class ArticleController(IArticleService articles, IPollService polls) : C
         return View(new ArticlePageViewModel(
             article,
             related.Items.Where(a => a.Id != article.Summary.Id).Take(3).ToList(),
-            await polls.GetForArticleAsync(article.Summary.Id, ct)));
+            await polls.GetForArticleAsync(article.Summary.Id, ct),
+            await comments.ListForArticleAsync(article.Summary.Id, ct)));
     }
 }

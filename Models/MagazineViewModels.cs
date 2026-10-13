@@ -1,5 +1,6 @@
 using CURSOVA.Application.Articles;
 using CURSOVA.Application.Categories;
+using CURSOVA.Application.Comments;
 using CURSOVA.Application.Common;
 using CURSOVA.Application.Interactive;
 using CURSOVA.Application.Issues;
@@ -14,6 +15,6 @@ public record CategoryPageViewModel(CategoryDto Category, PagedResult<ArticleSum
 
 public record SearchViewModel(string? Query, PagedResult<ArticleSummaryDto>? Results, PagerViewModel? Pager);
 
-public record ArticlePageViewModel(ArticleDetailsDto Article, IReadOnlyList<ArticleSummaryDto> Related, PollDto? Poll);
+public record ArticlePageViewModel(ArticleDetailsDto Article, IReadOnlyList<ArticleSummaryDto> Related, PollDto? Poll, IReadOnlyList<CommentDto> Comments);
 
 public record InteractiveHubViewModel(IReadOnlyList<QuizSummaryDto> Quizzes, IReadOnlyList<PollDto> Polls);
