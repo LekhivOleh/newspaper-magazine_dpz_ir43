@@ -1,15 +1,23 @@
+using CURSOVA.Application.Abstractions.Sharing;
 using CURSOVA.Application.Articles;
 using CURSOVA.Application.Comments;
 using CURSOVA.Application.Common;
 using CURSOVA.Application.Interactive;
+using CURSOVA.Application.Sharing;
 using CURSOVA.Domain.Articles;
+using CURSOVA.Domain.Sharing;
 using CURSOVA.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CURSOVA.Controllers;
 
 [Route("article")]
-public class ArticleController(IArticleService articles, IPollService polls, ICommentService comments) : Controller
+public class ArticleController(
+    IArticleService articles,
+    IPollService polls,
+    ICommentService comments,
+    ISharingFacade sharing,
+    IAppUrlProvider urls) : Controller
 {
     [HttpGet("{slug}")]
     public async Task<IActionResult> Show(string slug, CancellationToken ct = default)
@@ -36,6 +44,10 @@ public class ArticleController(IArticleService articles, IPollService polls, ICo
             article,
             related.Items.Where(a => a.Id != article.Summary.Id).Take(3).ToList(),
             await polls.GetForArticleAsync(article.Summary.Id, ct),
-            await comments.ListForArticleAsync(article.Summary.Id, ct)));
+            await comments.ListForArticleAsync(article.Summary.Id, ct),
+            new ShareBarViewModel(
+                await sharing.GetLinksAsync(ShareableType.Article, article.Summary.Id, ct),
+                (await sharing.GetStatsAsync(ShareableType.Article, article.Summary.Id, ct)).Total,
+                urls.ArticleUrl(article.Summary.Slug))));
     }
 }

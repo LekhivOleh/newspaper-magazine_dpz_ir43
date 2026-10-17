@@ -4,6 +4,22 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] — TechPulse</title>
+    <meta property="og:site_name" content="TechPulse" />
+    <meta property="og:title" content="@(ViewData["OgTitle"] ?? ViewData["Title"])" />
+    @if (ViewData["OgDescription"] is string ogDescription)
+    {
+        <meta property="og:description" content="@ogDescription" />
+        <meta name="description" content="@ogDescription" />
+    }
+    @if (ViewData["OgImage"] is string ogImage)
+    {
+        <meta property="og:image" content="@ogImage" />
+    }
+    @if (ViewData["OgUrl"] is string ogUrl)
+    {
+        <meta property="og:url" content="@ogUrl" />
+        <meta property="og:type" content="article" />
+    }
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
@@ -42,6 +58,7 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

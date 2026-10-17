@@ -1,12 +1,16 @@
+using CURSOVA.Application.Abstractions.Sharing;
 using CURSOVA.Application.Common;
 using CURSOVA.Application.Interactive;
+using CURSOVA.Application.Sharing;
 using CURSOVA.Domain.Common;
+using CURSOVA.Domain.Sharing;
+using CURSOVA.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CURSOVA.Controllers;
 
 [Route("quizzes")]
-public class QuizController(IQuizService quizzes) : Controller
+public class QuizController(IQuizService quizzes, ISharingFacade sharing, IAppUrlProvider urls) : Controller
 {
     [HttpGet("{id:int}")]
     public async Task<IActionResult> Show(int id, CancellationToken ct)
@@ -57,7 +61,14 @@ public class QuizController(IQuizService quizzes) : Controller
         try
         {
             var result = await quizzes.GetMyLastResultAsync(id, ct);
-            return result is null ? RedirectToAction(nameof(Show), new { id }) : View(result);
+            if (result is null)
+                return RedirectToAction(nameof(Show), new { id });
+
+            ViewData["Share"] = new ShareBarViewModel(
+                await sharing.GetLinksAsync(ShareableType.Quiz, id, ct),
+                (await sharing.GetStatsAsync(ShareableType.Quiz, id, ct)).Total,
+                urls.QuizUrl(id));
+            return View(result);
         }
         catch (NotFoundException)
         {

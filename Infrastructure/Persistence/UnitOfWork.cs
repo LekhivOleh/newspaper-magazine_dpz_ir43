@@ -9,7 +9,8 @@ public class UnitOfWork(
     IArticleRepository articles,
     IIssueRepository issues,
     IInteractiveRepository interactive,
-    ICommentRepository comments) : IUnitOfWork
+    ICommentRepository comments,
+    IShareRepository shares) : IUnitOfWork
 {
     public ICategoryRepository Categories { get; } = categories;
     public IAuthorRepository Authors { get; } = authors;
@@ -17,6 +18,7 @@ public class UnitOfWork(
     public IIssueRepository Issues { get; } = issues;
     public IInteractiveRepository Interactive { get; } = interactive;
     public ICommentRepository Comments { get; } = comments;
+    public IShareRepository Shares { get; } = shares;
 
     public Task<int> SaveChangesAsync(CancellationToken ct = default) => db.SaveChangesAsync(ct);
 }

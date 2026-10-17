@@ -5,6 +5,7 @@ using CURSOVA.Domain.Categories;
 using CURSOVA.Domain.Comments;
 using CURSOVA.Domain.Interactive;
 using CURSOVA.Domain.Issues;
+using CURSOVA.Domain.Sharing;
 using CURSOVA.Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -23,6 +24,7 @@ public class MagazineDbContext(DbContextOptions<MagazineDbContext> options)
     public DbSet<InteractiveElement> InteractiveElements => Set<InteractiveElement>();
     public DbSet<Submission> Submissions => Set<Submission>();
     public DbSet<Comment> Comments => Set<Comment>();
+    public DbSet<ShareEvent> ShareEvents => Set<ShareEvent>();
 
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
     {

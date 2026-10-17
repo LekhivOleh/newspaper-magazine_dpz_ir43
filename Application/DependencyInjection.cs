@@ -5,6 +5,7 @@ using CURSOVA.Application.Comments;
 using CURSOVA.Application.Comments.Moderation;
 using CURSOVA.Application.Interactive;
 using CURSOVA.Application.Issues;
+using CURSOVA.Application.Sharing;
 
 namespace CURSOVA.Application;
 
@@ -20,6 +21,7 @@ public static class DependencyInjection
         services.AddScoped<IQuizService, QuizService>();
         services.AddScoped<ICommentService, CommentService>();
         services.AddSingleton<ICommentModerator, ModerationPipeline>();
+        services.AddScoped<ISharingFacade, SharingFacade>();
 
         return services;
     }

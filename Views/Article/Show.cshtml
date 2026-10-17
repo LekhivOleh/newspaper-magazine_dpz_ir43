@@ -2,6 +2,10 @@
 @{
     var article = Model.Article.Summary;
     ViewData["Title"] = article.Title;
+    ViewData["OgTitle"] = article.Title;
+    ViewData["OgDescription"] = article.Lead;
+    ViewData["OgImage"] = article.CoverImageUrl;
+    ViewData["OgUrl"] = Model.Share.PageUrl;
 }
 
 <article class="article">
@@ -55,6 +59,8 @@
             }
         }
     </div>
+
+    <partial name="_ShareBar" model="Model.Share" />
 
     @if (Model.Poll is { } poll)
     {

@@ -1,0 +1,19 @@
+@using CURSOVA.Application.Sharing
+@model ShareBarViewModel
+
+<div class="share-bar">
+    <span class="share-label">
+        Поділитися
+        @if (Model.TotalShares > 0)
+        {
+            <span class="share-count">· @UkrainianPlural.Format(Model.TotalShares, "раз", "рази", "разів")</span>
+        }
+    </span>
+    <div class="share-buttons">
+        @foreach (var link in Model.Links)
+        {
+            <a class="share-btn share-@link.Network" href="@link.Url" target="_blank" rel="noopener nofollow">@link.DisplayName</a>
+        }
+        <button type="button" class="share-btn share-copy" data-copy-url="@Model.PageUrl">Копіювати посилання</button>
+    </div>
+</div>

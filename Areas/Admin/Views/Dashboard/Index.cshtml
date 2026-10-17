@@ -45,3 +45,22 @@
         </tbody>
     </table>
 </div>
+
+<h2 class="admin-subtitle">Найпоширеніші статті</h2>
+<div class="admin-card">
+    <table class="table admin-table mb-0">
+        <tbody>
+            @if (Model.TopShared.Count == 0)
+            {
+                <tr><td class="text-muted text-center py-3">Статтями ще не ділилися.</td></tr>
+            }
+            @foreach (var item in Model.TopShared)
+            {
+                <tr>
+                    <td><a asp-controller="Articles" asp-action="Edit" asp-route-id="@item.Article.Id">@item.Article.Title</a></td>
+                    <td class="text-end fw-semibold">@item.Shares</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

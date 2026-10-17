@@ -29,6 +29,10 @@
             <p class="quiz-result-description">@Model.OutcomeDescription</p>
         }
 
+        @if (ViewData["Share"] is ShareBarViewModel share)
+        {
+            <partial name="_ShareBar" model="share" />
+        }
         <a class="btn btn-outline-dark" asp-action="Show" asp-route-id="@Model.QuizId">Пройти ще раз</a>
         <a class="btn btn-link" href="/interactive">Інші тести</a>
     </section>

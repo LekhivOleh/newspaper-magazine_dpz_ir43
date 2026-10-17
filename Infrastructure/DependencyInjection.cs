@@ -1,8 +1,11 @@
 using CURSOVA.Application.Abstractions.Identity;
 using CURSOVA.Application.Abstractions.Persistence;
+using CURSOVA.Application.Abstractions.Sharing;
 using CURSOVA.Infrastructure.Identity;
 using CURSOVA.Infrastructure.Persistence;
 using CURSOVA.Infrastructure.Persistence.Repositories;
+using CURSOVA.Infrastructure.Sharing;
+using CURSOVA.Infrastructure.Sharing.Networks;
 using CURSOVA.Infrastructure.Web;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -24,9 +27,11 @@ public static class DependencyInjection
         services.AddScoped<IIssueRepository, IssueRepository>();
         services.AddScoped<IInteractiveRepository, InteractiveRepository>();
         services.AddScoped<ICommentRepository, CommentRepository>();
+        services.AddScoped<IShareRepository, ShareRepository>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 
         services.AddIdentityServices();
+        services.AddSharing();
 
         services.AddProblemDetails();
         services.AddExceptionHandler<ApiExceptionHandler>();
@@ -64,6 +69,24 @@ public static class DependencyInjection
         services.AddHttpContextAccessor();
         services.AddScoped<ICurrentUser, HttpCurrentUser>();
         services.AddScoped<IParticipantContext, CookieParticipantContext>();
+    }
+
+    private static void AddSharing(this IServiceCollection services)
+    {
+        services.AddSingleton<TelegramShareApi>();
+        services.AddSingleton<TwitterIntentClient>();
+        services.AddSingleton<WhatsAppLinkFactory>();
+        services.AddSingleton<MailtoComposer>();
+
+        // Registration order is the order of buttons on the page.
+        services.AddSingleton<IShareTarget, TelegramShareAdapter>();
+        services.AddSingleton<IShareTarget, FacebookShareAdapter>();
+        services.AddSingleton<IShareTarget, TwitterShareAdapter>();
+        services.AddSingleton<IShareTarget, LinkedInShareAdapter>();
+        services.AddSingleton<IShareTarget, WhatsAppShareAdapter>();
+        services.AddSingleton<IShareTarget, EmailShareAdapter>();
+
+        services.AddScoped<IAppUrlProvider, AppUrlProvider>();
     }
 
     private static Task ApiAwareRedirect(RedirectContext<CookieAuthenticationOptions> context, int apiStatusCode)

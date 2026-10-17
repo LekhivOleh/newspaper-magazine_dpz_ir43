@@ -5,6 +5,7 @@ using CURSOVA.Application.Categories;
 using CURSOVA.Application.Common;
 using CURSOVA.Application.Interactive;
 using CURSOVA.Application.Issues;
+using CURSOVA.Application.Sharing;
 using CURSOVA.Domain.Articles;
 using CURSOVA.Domain.Categories;
 using CURSOVA.Domain.Issues;
@@ -107,7 +108,8 @@ public record ArticleListPage(
     int? CategoryId,
     string? Search);
 
-public record DashboardPage(int Published, int Drafts, int Archived, int Categories, int Authors, int PendingComments, IReadOnlyList<ArticleSummaryDto> Recent);
+public record DashboardPage(int Published, int Drafts, int Archived, int Categories, int Authors, int PendingComments,
+    IReadOnlyList<ArticleSummaryDto> Recent, IReadOnlyList<TopSharedArticleDto> TopShared);
 
 public class IssueForm
 {
