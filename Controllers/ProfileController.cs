@@ -1,6 +1,7 @@
 using CURSOVA.Application.Abstractions.Identity;
 using CURSOVA.Application.Common;
 using CURSOVA.Application.Profiles;
+using CURSOVA.Application.Recommendations;
 using CURSOVA.Domain.Common;
 using CURSOVA.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -10,7 +11,11 @@ namespace CURSOVA.Controllers;
 
 [Authorize]
 [AutoValidateAntiforgeryToken]
-public class ProfileController(ISavedArticleService saved, ICollectionService collections, ICurrentUser currentUser) : Controller
+public class ProfileController(
+    ISavedArticleService saved,
+    ICollectionService collections,
+    IRecommendationService recommendations,
+    ICurrentUser currentUser) : Controller
 {
     [HttpGet("/profile")]
     public IActionResult Index() => RedirectToAction(nameof(Saved));
@@ -26,6 +31,40 @@ public class ProfileController(ISavedArticleService saved, ICollectionService co
     [HttpGet("/profile/collections")]
     public async Task<IActionResult> Collections(CancellationToken ct) =>
         View((currentUser.DisplayName ?? "Читач", await collections.ListMineAsync(ct)));
+
+    [HttpGet("/profile/recommendations")]
+    public async Task<IActionResult> Recommendations(string? strategy, CancellationToken ct)
+    {
+        try
+        {
+            return View(new RecommendationsPageViewModel(
+                currentUser.DisplayName ?? "Читач",
+                await recommendations.RecommendAsync(12, strategy, ct),
+                recommendations.Strategies,
+                strategy,
+                await recommendations.GetInterestsAsync(ct)));
+        }
+        catch (DomainException)
+        {
+            return RedirectToAction(nameof(Recommendations), new { strategy = (string?)null });
+        }
+    }
+
+    [HttpPost("/profile/interests")]
+    public async Task<IActionResult> SaveInterests(int[] categoryIds, CancellationToken ct)
+    {
+        try
+        {
+            await recommendations.SetInterestsAsync(categoryIds, ct);
+            TempData["InterestsMessage"] = "Інтереси збережено — рекомендації оновлено.";
+        }
+        catch (DomainException e)
+        {
+            TempData["InterestsMessage"] = e.Message;
+        }
+
+        return RedirectToAction(nameof(Recommendations));
+    }
 
     [HttpPost("/article/{articleId:int}/save")]
     public async Task<IActionResult> Toggle(int articleId, string? returnUrl, CancellationToken ct)

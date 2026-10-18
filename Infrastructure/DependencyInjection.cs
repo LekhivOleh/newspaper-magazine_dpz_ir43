@@ -30,6 +30,7 @@ public static class DependencyInjection
         services.AddScoped<IShareRepository, ShareRepository>();
         services.AddScoped<ISavedArticleRepository, SavedArticleRepository>();
         services.AddScoped<ICollectionRepository, CollectionRepository>();
+        services.AddScoped<IRecommendationDataSource, RecommendationDataSource>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 
         services.AddIdentityServices();

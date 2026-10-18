@@ -6,6 +6,7 @@ using CURSOVA.Application.Comments.Moderation;
 using CURSOVA.Application.Interactive;
 using CURSOVA.Application.Issues;
 using CURSOVA.Application.Profiles;
+using CURSOVA.Application.Recommendations;
 using CURSOVA.Application.Sharing;
 
 namespace CURSOVA.Application;
@@ -25,7 +26,23 @@ public static class DependencyInjection
         services.AddScoped<ISharingFacade, SharingFacade>();
         services.AddScoped<ISavedArticleService, SavedArticleService>();
         services.AddScoped<ICollectionService, CollectionService>();
+        services.AddRecommendations();
 
         return services;
+    }
+
+    private static void AddRecommendations(this IServiceCollection services)
+    {
+        services.AddSingleton<InterestBasedStrategy>();
+        services.AddSingleton<PopularityStrategy>();
+        services.AddSingleton(sp => new HybridStrategy(
+            (sp.GetRequiredService<InterestBasedStrategy>(), 0.7),
+            (sp.GetRequiredService<PopularityStrategy>(), 0.3)));
+
+        services.AddSingleton<IRecommendationStrategy>(sp => sp.GetRequiredService<HybridStrategy>());
+        services.AddSingleton<IRecommendationStrategy>(sp => sp.GetRequiredService<InterestBasedStrategy>());
+        services.AddSingleton<IRecommendationStrategy>(sp => sp.GetRequiredService<PopularityStrategy>());
+
+        services.AddScoped<IRecommendationService, RecommendationService>();
     }
 }

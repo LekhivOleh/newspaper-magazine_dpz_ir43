@@ -1232,3 +1232,100 @@ figcaption,
 .add-to-collection-panel a {
     color: var(--tp-accent);
 }
+
+/* Recommendations */
+
+.recommended-item {
+    position: relative;
+}
+
+.recommended-reason {
+    display: inline-block;
+    margin-bottom: 0.5rem;
+    padding: 0.15rem 0.55rem;
+    background: #fff5f7;
+    border-left: 2px solid var(--tp-accent);
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--tp-accent);
+}
+
+.recommendations-layout {
+    display: grid;
+    grid-template-columns: 1fr 17rem;
+    gap: 2rem;
+    align-items: start;
+}
+
+@media (max-width: 900px) {
+    .recommendations-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+.strategy-switch {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+}
+
+.strategy-switch a {
+    padding: 0.25rem 0.7rem;
+    border: 1px solid var(--tp-line);
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.strategy-switch a.active {
+    background: var(--tp-ink);
+    border-color: var(--tp-ink);
+    color: #fff;
+}
+
+.interests-panel {
+    padding: 1.25rem;
+    background: #fff;
+    border: 1px solid var(--tp-line);
+}
+
+.interest-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.interest-chip {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    gap: 0.2rem 0.6rem;
+    padding: 0.5rem 0.7rem;
+    border: 1px solid var(--tp-line);
+    cursor: pointer;
+}
+
+.interest-chip:has(input:checked) {
+    border-color: var(--tp-accent);
+    background: #fff5f7;
+}
+
+.interest-chip input {
+    accent-color: var(--tp-accent);
+}
+
+.interest-name {
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+.interest-bar {
+    grid-column: 2;
+    height: 3px;
+    background: var(--tp-paper);
+}
+
+.interest-bar span {
+    display: block;
+    height: 100%;
+    background: var(--tp-gold);
+}

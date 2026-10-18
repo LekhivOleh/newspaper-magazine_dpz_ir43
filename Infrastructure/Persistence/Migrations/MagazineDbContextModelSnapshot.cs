@@ -599,6 +599,28 @@ namespace CURSOVA.Infrastructure.Persistence.Migrations
                     b.ToTable("SavedArticles");
                 });
 
+            modelBuilder.Entity("CURSOVA.Domain.Profiles.UserInterest", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
+
+                    b.HasIndex("UserId", "CategoryId")
+                        .IsUnique();
+
+                    b.ToTable("UserInterests");
+                });
+
             modelBuilder.Entity("CURSOVA.Domain.Sharing.ShareEvent", b =>
                 {
                     b.Property<int>("Id")
@@ -1098,6 +1120,21 @@ namespace CURSOVA.Infrastructure.Persistence.Migrations
                     b.HasOne("CURSOVA.Domain.Articles.Article", null)
                         .WithMany()
                         .HasForeignKey("ArticleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CURSOVA.Infrastructure.Identity.ApplicationUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("CURSOVA.Domain.Profiles.UserInterest", b =>
+                {
+                    b.HasOne("CURSOVA.Domain.Categories.Category", null)
+                        .WithMany()
+                        .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

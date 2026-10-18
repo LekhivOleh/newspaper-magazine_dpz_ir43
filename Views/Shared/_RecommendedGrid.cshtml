@@ -1,0 +1,12 @@
+@using CURSOVA.Application.Recommendations
+@model IReadOnlyList<RecommendedArticleDto>
+
+<div class="article-grid">
+    @foreach (var item in Model)
+    {
+        <div class="recommended-item">
+            <span class="recommended-reason">@item.Reason</span>
+            <partial name="_ArticleCard" model="item.Article" />
+        </div>
+    }
+</div>

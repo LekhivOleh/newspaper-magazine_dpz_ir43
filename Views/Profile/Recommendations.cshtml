@@ -1,0 +1,61 @@
+@using CURSOVA.Application.Recommendations
+@model RecommendationsPageViewModel
+@{
+    ViewData["Title"] = "Для вас";
+    var message = TempData["InterestsMessage"] as string;
+}
+
+<partial name="_ProfileHeader" model="Model.DisplayName" />
+
+<div class="recommendations-layout">
+    <section>
+        <div class="d-flex flex-wrap justify-content-between align-items-end gap-2 mb-3">
+            <h2 class="section-title border-0 mb-0 pb-0">@Model.Recommendations.StrategyTitle</h2>
+            <nav class="strategy-switch" aria-label="Алгоритм рекомендацій">
+                <a class="@(Model.ExplicitStrategy is null ? "active" : "")" href="/profile/recommendations">Авто</a>
+                @foreach (var (key, title) in Model.Strategies)
+                {
+                    <a class="@(Model.ExplicitStrategy == key ? "active" : "")" href="/profile/recommendations?strategy=@key">@title</a>
+                }
+            </nav>
+        </div>
+
+        @if (Model.Recommendations.Items.Count == 0)
+        {
+            <p class="empty-state">
+                Поки що нічого порадити.
+                @if (Model.Recommendations.StrategyKey == "interests")
+                {
+                    <span>Оберіть цікаві рубрики праворуч або збережіть кілька статей.</span>
+                }
+            </p>
+        }
+        else
+        {
+            <partial name="_RecommendedGrid" model="Model.Recommendations.Items" />
+        }
+    </section>
+
+    <aside class="interests-panel">
+        <h2 class="h5 fw-bold">Мої інтереси</h2>
+        <p class="small text-muted">Рекомендації враховують обрані рубрики, а також збережені статті, підбірки й коментарі.</p>
+        @if (message is not null)
+        {
+            <div class="alert alert-info py-2 small">@message</div>
+        }
+        <form method="post" action="/profile/interests">
+            @Html.AntiForgeryToken()
+            <div class="interest-list">
+                @foreach (var interest in Model.Interests)
+                {
+                    <label class="interest-chip">
+                        <input type="checkbox" name="categoryIds" value="@interest.Category.Id" checked="@interest.Selected" />
+                        <span class="interest-name">@interest.Category.Name</span>
+                        <span class="interest-bar" title="Вага інтересу: @interest.Weight"><span style="width: @((int)(interest.Weight * 100))%"></span></span>
+                    </label>
+                }
+            </div>
+            <button type="submit" class="btn btn-dark btn-sm w-100 mt-3">Зберегти інтереси</button>
+        </form>
+    </aside>
+</div>

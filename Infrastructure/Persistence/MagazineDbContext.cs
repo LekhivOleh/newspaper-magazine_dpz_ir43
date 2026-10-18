@@ -28,6 +28,7 @@ public class MagazineDbContext(DbContextOptions<MagazineDbContext> options)
     public DbSet<ShareEvent> ShareEvents => Set<ShareEvent>();
     public DbSet<SavedArticle> SavedArticles => Set<SavedArticle>();
     public DbSet<Collection> Collections => Set<Collection>();
+    public DbSet<UserInterest> UserInterests => Set<UserInterest>();
 
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
     {

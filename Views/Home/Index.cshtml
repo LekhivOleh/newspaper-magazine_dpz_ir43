@@ -32,6 +32,20 @@
     </section>
 }
 
+@if (Model.Recommendations is { Items.Count: > 0 } recommended)
+{
+    <section class="section">
+        <div class="d-flex justify-content-between align-items-end section-title">
+            <h2 class="m-0" style="font: inherit">@recommended.StrategyTitle</h2>
+            @if (User.Identity?.IsAuthenticated == true)
+            {
+                <a class="small fw-semibold" style="font-family: var(--tp-sans)" href="/profile/recommendations">Більше для вас →</a>
+            }
+        </div>
+        <partial name="_RecommendedGrid" model="recommended.Items" />
+    </section>
+}
+
 <section class="section">
     <h2 class="section-title">@(Model.Pager.Page == 1 ? "Свіжі матеріали" : "Архів")</h2>
     <partial name="_ArticleGrid" model="Model.Articles" />
