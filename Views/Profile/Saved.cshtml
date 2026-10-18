@@ -1,0 +1,43 @@
+@model SavedPageViewModel
+@{
+    ViewData["Title"] = "Збережене";
+    var message = TempData["SaveMessage"] as string;
+    var returnUrl = Context.Request.Path + Context.Request.QueryString;
+}
+
+<partial name="_ProfileHeader" model="Model.DisplayName" />
+
+@if (message is not null)
+{
+    <div class="alert alert-info py-2">@message</div>
+}
+
+@if (Model.Saved.TotalCount == 0)
+{
+    <div class="empty-state">
+        <p>Ви ще нічого не зберегли.</p>
+        <p class="small">Натисніть «☆ Зберегти» на сторінці статті, щоб повернутися до неї пізніше.</p>
+        <a class="btn btn-dark" asp-controller="Home" asp-action="Index">До статей</a>
+    </div>
+}
+else
+{
+    <p class="text-muted">@UkrainianPlural.Format(Model.Saved.TotalCount, "збережена стаття", "збережені статті", "збережених статей")</p>
+    <div class="article-grid">
+        @foreach (var item in Model.Saved.Items)
+        {
+            <div class="saved-item">
+                <partial name="_ArticleCard" model="item.Article" />
+                <div class="saved-item-footer">
+                    <span>Збережено @item.SavedAt.ToLocalTime().ToString("d MMMM")</span>
+                    <form method="post" action="/article/@item.Article.Id/save">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="returnUrl" value="@returnUrl" />
+                        <button type="submit" class="btn btn-link btn-sm p-0">Прибрати</button>
+                    </form>
+                </div>
+            </div>
+        }
+    </div>
+    <partial name="_Pagination" model="Model.Pager" />
+}

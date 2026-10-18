@@ -499,6 +499,31 @@ namespace CURSOVA.Infrastructure.Persistence.Migrations
                     b.UseTphMappingStrategy();
                 });
 
+            modelBuilder.Entity("CURSOVA.Domain.Profiles.SavedArticle", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("ArticleId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("SavedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ArticleId");
+
+                    b.HasIndex("UserId", "ArticleId")
+                        .IsUnique();
+
+                    b.ToTable("SavedArticles");
+                });
+
             modelBuilder.Entity("CURSOVA.Domain.Sharing.ShareEvent", b =>
                 {
                     b.Property<int>("Id")
@@ -962,6 +987,21 @@ namespace CURSOVA.Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("Parent");
+                });
+
+            modelBuilder.Entity("CURSOVA.Domain.Profiles.SavedArticle", b =>
+                {
+                    b.HasOne("CURSOVA.Domain.Articles.Article", null)
+                        .WithMany()
+                        .HasForeignKey("ArticleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CURSOVA.Infrastructure.Identity.ApplicationUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>

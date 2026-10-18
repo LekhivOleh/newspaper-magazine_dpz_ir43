@@ -28,6 +28,7 @@ public static class DependencyInjection
         services.AddScoped<IInteractiveRepository, InteractiveRepository>();
         services.AddScoped<ICommentRepository, CommentRepository>();
         services.AddScoped<IShareRepository, ShareRepository>();
+        services.AddScoped<ISavedArticleRepository, SavedArticleRepository>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 
         services.AddIdentityServices();

@@ -3,6 +3,7 @@ using CURSOVA.Application.Articles;
 using CURSOVA.Application.Comments;
 using CURSOVA.Application.Common;
 using CURSOVA.Application.Interactive;
+using CURSOVA.Application.Profiles;
 using CURSOVA.Application.Sharing;
 using CURSOVA.Domain.Articles;
 using CURSOVA.Domain.Sharing;
@@ -17,6 +18,7 @@ public class ArticleController(
     IPollService polls,
     ICommentService comments,
     ISharingFacade sharing,
+    ISavedArticleService saved,
     IAppUrlProvider urls) : Controller
 {
     [HttpGet("{slug}")]
@@ -48,6 +50,7 @@ public class ArticleController(
             new ShareBarViewModel(
                 await sharing.GetLinksAsync(ShareableType.Article, article.Summary.Id, ct),
                 (await sharing.GetStatsAsync(ShareableType.Article, article.Summary.Id, ct)).Total,
-                urls.ArticleUrl(article.Summary.Slug))));
+                urls.ArticleUrl(article.Summary.Slug)),
+            await saved.IsSavedAsync(article.Summary.Id, ct)));
     }
 }

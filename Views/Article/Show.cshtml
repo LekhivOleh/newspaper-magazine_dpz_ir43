@@ -6,6 +6,8 @@
     ViewData["OgDescription"] = article.Lead;
     ViewData["OgImage"] = article.CoverImageUrl;
     ViewData["OgUrl"] = Model.Share.PageUrl;
+    var saveMessage = TempData["SaveMessage"] as string;
+    var returnUrl = Context.Request.Path.ToString();
 }
 
 <article class="article">
@@ -27,7 +29,23 @@
                 <div class="byline-name">@article.Author.FullName</div>
                 <partial name="_ArticleMeta" model="article" />
             </div>
+            @if (User.Identity?.IsAuthenticated == true)
+            {
+                <form method="post" action="/article/@article.Id/save" class="ms-auto">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="returnUrl" value="@returnUrl" />
+                    <button type="submit" class="btn-save @(Model.IsSaved ? "is-saved" : "")">@(Model.IsSaved ? "★ Збережено" : "☆ Зберегти")</button>
+                </form>
+            }
+            else
+            {
+                <a class="btn-save ms-auto" asp-controller="Account" asp-action="Login" asp-route-returnUrl="@returnUrl">☆ Зберегти</a>
+            }
         </div>
+        @if (saveMessage is not null)
+        {
+            <p class="save-message">@saveMessage <a asp-controller="Profile" asp-action="Saved">Мій профіль →</a></p>
+        }
     </header>
 
     @if (article.CoverImageUrl is not null)

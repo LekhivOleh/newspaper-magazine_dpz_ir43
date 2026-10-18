@@ -10,6 +10,7 @@
             @(user?.DisplayName ?? User.Identity.Name)
         </button>
         <ul class="dropdown-menu dropdown-menu-end">
+            <li><a class="dropdown-item" asp-area="" asp-controller="Profile" asp-action="Saved">Мій профіль</a></li>
             @if (User.IsInRole(CURSOVA.Application.Abstractions.Identity.Roles.Admin))
             {
                 <li><a class="dropdown-item" asp-area="Admin" asp-controller="Dashboard" asp-action="Index">Адмінка</a></li>

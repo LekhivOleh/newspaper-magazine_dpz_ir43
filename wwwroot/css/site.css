@@ -971,3 +971,96 @@ figcaption,
 .quiz-result .share-label {
     color: #fff;
 }
+
+/* Profile & saved articles */
+
+.btn-save {
+    padding: 0.45rem 0.9rem;
+    border: 1px solid var(--tp-ink);
+    background: transparent;
+    color: var(--tp-ink);
+    font-size: 0.85rem;
+    font-weight: 600;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.btn-save:hover,
+.btn-save.is-saved {
+    background: var(--tp-ink);
+    color: var(--tp-gold);
+}
+
+.save-message {
+    margin: 0.75rem 0 0;
+    font-size: 0.9rem;
+    color: var(--tp-muted);
+}
+
+.save-message a {
+    color: var(--tp-accent);
+}
+
+.profile-header {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    padding: 2rem 0 1.25rem;
+}
+
+.profile-avatar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 4.5rem;
+    height: 4.5rem;
+    border-radius: 50%;
+    background: var(--tp-ink);
+    color: var(--tp-gold);
+    font-family: var(--tp-serif);
+    font-size: 2rem;
+    font-weight: 900;
+}
+
+.profile-name {
+    font-family: var(--tp-serif);
+    font-weight: 900;
+    font-size: 2.5rem;
+    margin: 0;
+}
+
+.profile-tabs {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+    border-bottom: 2px solid var(--tp-ink);
+}
+
+.profile-tabs a {
+    padding: 0.6rem 0;
+    margin-bottom: -2px;
+    font-weight: 600;
+    color: var(--tp-muted);
+    border-bottom: 2px solid transparent;
+}
+
+.profile-tabs a.active {
+    color: var(--tp-ink);
+    border-bottom-color: var(--tp-accent);
+}
+
+.saved-item-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--tp-line);
+    font-size: 0.8rem;
+    color: var(--tp-muted);
+}
+
+.saved-item-footer .btn-link {
+    color: var(--tp-accent);
+    font-size: 0.8rem;
+}

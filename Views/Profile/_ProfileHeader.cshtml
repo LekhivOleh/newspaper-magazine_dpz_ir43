@@ -1,0 +1,17 @@
+@model string
+@{
+    var action = ViewContext.RouteData.Values["action"] as string;
+    string Tab(string name) => action == name ? "active" : "";
+}
+
+<header class="profile-header">
+    <span class="profile-avatar">@Model[..1].ToUpperInvariant()</span>
+    <div>
+        <p class="hero-kicker mb-1">Мій профіль</p>
+        <h1 class="profile-name">@Model</h1>
+    </div>
+</header>
+
+<nav class="profile-tabs">
+    <a class="@Tab("Saved")" asp-controller="Profile" asp-action="Saved">Збережене</a>
+</nav>
