@@ -99,7 +99,7 @@ public static class MagazineSeeder
                     .AddGallery(g => g
                         .Add(Img("earbuds-case"), "Кейси для заряджання")
                         .Add(Img("earbuds-ear"), "Посадка у вусі")
-                        .Add(Img("earbuds-app"), "Фірмовий застосунок"), "Деталі"))
+                        .Add(Img("earbuds-app"), "Фірмовий застосунок"), "Деталі", exclusive: true))
                 .Build(),
 
             Article("Механічні клавіатури: гайд для початківців",

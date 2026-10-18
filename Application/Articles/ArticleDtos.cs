@@ -22,14 +22,28 @@ public record ArticleSummaryDto(
     DateTime? PublishedAt,
     int ViewCount);
 
-public record ArticleDetailsDto(ArticleSummaryDto Summary, IReadOnlyList<BlockDto> Blocks);
+public record ArticleDetailsDto(ArticleSummaryDto Summary, IReadOnlyList<BlockDto> Blocks, ContentAccessDto? Access = null);
+
+/// <param name="IsFull">False when the reader sees only a teaser of a Premium article.</param>
+/// <param name="HiddenBlocks">How many blocks were held back (teaser cut or locked exclusive media).</param>
+public record ContentAccessDto(bool IsFull, int HiddenBlocks, bool HasPremium)
+{
+    public static readonly ContentAccessDto Unrestricted = new(true, 0, false);
+}
 
 [JsonPolymorphic(TypeDiscriminatorPropertyName = "type")]
 [JsonDerivedType(typeof(TextBlockDto), "text")]
 [JsonDerivedType(typeof(ImageBlockDto), "image")]
 [JsonDerivedType(typeof(VideoBlockDto), "video")]
 [JsonDerivedType(typeof(GalleryBlockDto), "gallery")]
-public abstract record BlockDto;
+[JsonDerivedType(typeof(LockedBlockDto), "locked")]
+public abstract record BlockDto
+{
+    public bool IsExclusive { get; init; }
+}
+
+/// <summary>Placeholder the reader sees instead of exclusive media they can't access.</summary>
+public record LockedBlockDto(string LockedType) : BlockDto;
 
 public record TextBlockDto(string Body, string? Heading) : BlockDto;
 

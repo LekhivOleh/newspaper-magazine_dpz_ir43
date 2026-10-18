@@ -1480,3 +1480,65 @@ figcaption,
 .payments-table {
     background: #fff;
 }
+
+/* Premium content protection */
+
+.exclusive-badge {
+    display: inline-block;
+    margin-bottom: 0.4rem;
+    padding: 0.15rem 0.6rem;
+    background: var(--tp-gold);
+    color: #fff;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+}
+
+.locked-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.2rem;
+    aspect-ratio: 16 / 9;
+    padding: 1.5rem;
+    background:
+        linear-gradient(135deg, rgba(17, 19, 24, 0.92), rgba(17, 19, 24, 0.75)),
+        repeating-linear-gradient(45deg, #2a2d36 0 12px, #1d2027 12px 24px);
+    color: #fff;
+    text-align: center;
+}
+
+.locked-icon {
+    font-size: 2rem;
+}
+
+.locked-placeholder span:not(.locked-icon) {
+    color: var(--tp-gold);
+    font-size: 0.9rem;
+}
+
+.paywall {
+    position: relative;
+    margin: -6rem 0 2rem;
+    padding: 7rem 2rem 2.5rem;
+    background: linear-gradient(transparent, var(--tp-paper) 5rem);
+    text-align: center;
+}
+
+.paywall h2 {
+    font-family: var(--tp-serif);
+    font-weight: 900;
+    font-size: 2rem;
+}
+
+.paywall p {
+    max-width: 32rem;
+    margin: 0.75rem auto 1.5rem;
+    color: var(--tp-muted);
+}
+
+.paywall a:not(.btn) {
+    color: var(--tp-accent);
+    font-weight: 600;
+}

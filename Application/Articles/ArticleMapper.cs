@@ -14,12 +14,12 @@ public static class ArticleMapper
     public static ArticleDetailsDto ToDetails(this Article a) =>
         new(a.ToSummary(), a.Blocks.OrderBy(b => b.Position).Select(ToDto).ToList());
 
-    public static BlockDto ToDto(this ContentBlock block) => block switch
+    public static BlockDto ToDto(this ContentBlock block) => (block switch
     {
         TextBlock t => new TextBlockDto(t.Body, t.Heading),
         ImageBlock i => new ImageBlockDto(i.Url, i.Caption),
         VideoBlock v => new VideoBlockDto(v.EmbedUrl, v.Caption),
-        GalleryBlock g => new GalleryBlockDto(g.Images.Select(img => new GalleryImageDto(img.Url, img.Caption)).ToList(), g.Title),
+        GalleryBlock g => (BlockDto)new GalleryBlockDto(g.Images.Select(img => new GalleryImageDto(img.Url, img.Caption)).ToList(), g.Title),
         _ => throw new NotSupportedException($"Невідомий тип блоку: {block.GetType().Name}")
-    };
+    }) with { IsExclusive = block.IsExclusive };
 }

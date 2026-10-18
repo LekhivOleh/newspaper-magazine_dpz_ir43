@@ -91,6 +91,21 @@
         }
     }
 
+    function exclusiveToggle(block) {
+        const label = document.createElement("label");
+        label.className = "form-check small";
+        const input = document.createElement("input");
+        input.type = "checkbox";
+        input.className = "form-check-input";
+        input.checked = !!block.isExclusive;
+        input.addEventListener("change", () => {
+            block.isExclusive = input.checked;
+            markDirty();
+        });
+        label.append(input, " ★ Ексклюзив для Premium (іншим — заблокований блок)");
+        return label;
+    }
+
     function render() {
         list.replaceChildren();
         empty.hidden = blocks.length > 0;
@@ -115,6 +130,8 @@
             const body = document.createElement("div");
             body.className = "editor-block-body";
             renderBlockFields(block, body);
+            if (block.type !== "text")
+                body.append(exclusiveToggle(block));
 
             card.append(header, body);
             list.append(card);

@@ -15,18 +15,20 @@ public static class ContentDirector
                     builder.AddText(t.Body, t.Heading);
                     break;
                 case ImageBlockDto i:
-                    builder.AddImage(i.Url, i.Caption);
+                    builder.AddImage(i.Url, i.Caption, i.IsExclusive);
                     break;
                 case VideoBlockDto v:
-                    builder.AddVideo(v.EmbedUrl, v.Caption);
+                    builder.AddVideo(v.EmbedUrl, v.Caption, v.IsExclusive);
                     break;
                 case GalleryBlockDto g:
                     builder.AddGallery(gallery =>
                     {
                         foreach (var image in g.Images ?? [])
                             gallery.Add(image.Url, image.Caption);
-                    }, g.Title);
+                    }, g.Title, g.IsExclusive);
                     break;
+                case LockedBlockDto:
+                    throw new DomainException("Заблокований блок не можна зберегти як контент.");
                 default:
                     throw new DomainException("Невідомий тип блоку контенту.");
             }

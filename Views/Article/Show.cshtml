@@ -67,8 +67,15 @@
         {
             var block = Model.Article.Blocks[i];
             ViewData["BlockIndex"] = i;
+            @if (block.IsExclusive && block is not LockedBlockDto)
+            {
+                <span class="exclusive-badge">★ Ексклюзив для Premium</span>
+            }
             switch (block)
             {
+                case LockedBlockDto locked:
+                    <partial name="Blocks/_Locked" model="locked" />
+                    break;
                 case TextBlockDto text:
                     <partial name="Blocks/_Text" model="text" />
                     break;
@@ -84,6 +91,20 @@
             }
         }
     </div>
+
+    @if (Model.Article.Access is { IsFull: false } access)
+    {
+        <section class="paywall">
+            <p class="hero-kicker">TechPulse Premium</p>
+            <h2>Продовження — для передплатників</h2>
+            <p>Ще @UkrainianPlural.Format(access.HiddenBlocks, "розділ", "розділи", "розділів") цієї статті доступні з Premium-підпискою: без реклами, з ексклюзивними фото та відео.</p>
+            <a class="btn btn-dark btn-lg" href="/premium">Оформити Premium від 99 грн</a>
+            @if (User.Identity?.IsAuthenticated != true)
+            {
+                <p class="small mt-3 mb-0">Уже маєте підписку? <a href="/account/login?returnUrl=@Uri.EscapeDataString(Context.Request.Path)">Увійдіть</a></p>
+            }
+        </section>
+    }
 
     <partial name="_ShareBar" model="Model.Share" />
 

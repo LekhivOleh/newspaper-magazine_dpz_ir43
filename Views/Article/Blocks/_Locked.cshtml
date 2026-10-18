@@ -1,0 +1,18 @@
+@model LockedBlockDto
+@{
+    var what = Model.LockedType switch
+    {
+        "video" => "Ексклюзивне відео",
+        "gallery" => "Ексклюзивна фотогалерея",
+        _ => "Ексклюзивне фото"
+    };
+}
+
+<figure class="block block-locked">
+    <div class="locked-placeholder">
+        <span class="locked-icon">🔒</span>
+        <strong>@what</strong>
+        <span>Доступно з TechPulse Premium</span>
+        <a class="btn btn-sm btn-light mt-2" href="/premium">Відкрити доступ</a>
+    </div>
+</figure>

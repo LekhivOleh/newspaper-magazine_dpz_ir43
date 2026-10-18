@@ -1,5 +1,6 @@
 using CURSOVA.Application.Abstractions.Identity;
 using CURSOVA.Application.Articles;
+using CURSOVA.Application.Articles.Access;
 using CURSOVA.Application.Common;
 using CURSOVA.Domain.Articles;
 using Microsoft.AspNetCore.Authorization;
@@ -9,7 +10,7 @@ namespace CURSOVA.Controllers.Api;
 
 [ApiController]
 [Route("api/articles")]
-public class ArticlesController(IArticleService articles, ICurrentUser currentUser) : ControllerBase
+public class ArticlesController(IArticleService articles, IArticleReader reader, ICurrentUser currentUser) : ControllerBase
 {
     [HttpGet]
     public Task<PagedResult<ArticleSummaryDto>> Search([FromQuery] ArticleFilter filter, CancellationToken ct) =>
@@ -19,11 +20,11 @@ public class ArticlesController(IArticleService articles, ICurrentUser currentUs
 
     [HttpGet("{id:int}")]
     public async Task<ActionResult<ArticleDetailsDto>> Get(int id, CancellationToken ct) =>
-        VisibleOrNotFound(await articles.GetAsync(id, ct));
+        VisibleOrNotFound(await reader.GetAsync(id, ct));
 
     [HttpGet("{slug}")]
     public async Task<ActionResult<ArticleDetailsDto>> GetBySlug(string slug, CancellationToken ct) =>
-        VisibleOrNotFound(await articles.GetBySlugAsync(slug, ct));
+        VisibleOrNotFound(await reader.GetBySlugAsync(slug, ct));
 
     [Authorize(Roles = Roles.Admin)]
     [HttpPost]

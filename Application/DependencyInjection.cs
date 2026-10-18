@@ -1,4 +1,6 @@
+using CURSOVA.Application.Abstractions.Identity;
 using CURSOVA.Application.Articles;
+using CURSOVA.Application.Articles.Access;
 using CURSOVA.Application.Authors;
 using CURSOVA.Application.Categories;
 using CURSOVA.Application.Comments;
@@ -18,6 +20,11 @@ public static class DependencyInjection
     {
         services.AddScoped<ICategoryService, CategoryService>();
         services.AddScoped<IArticleService, ArticleService>();
+        services.AddScoped<ArticleReader>();
+        services.AddScoped<IArticleReader>(sp => new PremiumContentProxy(
+            sp.GetRequiredService<ArticleReader>(),
+            sp.GetRequiredService<ISubscriptionService>(),
+            sp.GetRequiredService<ICurrentUser>()));
         services.AddScoped<IAuthorService, AuthorService>();
         services.AddScoped<IIssueService, IssueService>();
         services.AddScoped<IPollService, PollService>();

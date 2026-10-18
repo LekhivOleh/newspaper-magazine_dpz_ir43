@@ -95,6 +95,9 @@ namespace CURSOVA.Infrastructure.Persistence.Migrations
                     b.Property<int>("ArticleId")
                         .HasColumnType("INTEGER");
 
+                    b.Property<bool>("IsExclusive")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("Kind")
                         .IsRequired()
                         .HasMaxLength(20)

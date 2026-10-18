@@ -1,5 +1,6 @@
 using CURSOVA.Application.Abstractions.Sharing;
 using CURSOVA.Application.Articles;
+using CURSOVA.Application.Articles.Access;
 using CURSOVA.Application.Comments;
 using CURSOVA.Application.Common;
 using CURSOVA.Application.Interactive;
@@ -15,6 +16,7 @@ namespace CURSOVA.Controllers;
 [Route("article")]
 public class ArticleController(
     IArticleService articles,
+    IArticleReader reader,
     IPollService polls,
     ICommentService comments,
     ISharingFacade sharing,
@@ -28,7 +30,7 @@ public class ArticleController(
         ArticleDetailsDto article;
         try
         {
-            article = await articles.GetBySlugAsync(slug, ct);
+            article = await reader.GetBySlugAsync(slug, ct);
         }
         catch (NotFoundException)
         {

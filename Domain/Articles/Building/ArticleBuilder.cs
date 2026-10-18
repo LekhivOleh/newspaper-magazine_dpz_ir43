@@ -62,10 +62,12 @@ public class ArticleBuilder : IContentBuilder
     }
 
     IContentBuilder IContentBuilder.AddText(string body, string? heading) => WithContent(c => c.AddText(body, heading));
-    IContentBuilder IContentBuilder.AddImage(string url, string? caption) => WithContent(c => c.AddImage(url, caption));
-    IContentBuilder IContentBuilder.AddVideo(string embedUrl, string? caption) => WithContent(c => c.AddVideo(embedUrl, caption));
-    IContentBuilder IContentBuilder.AddGallery(Action<GalleryBuilder> configure, string? title) =>
-        WithContent(c => c.AddGallery(configure, title));
+    IContentBuilder IContentBuilder.AddImage(string url, string? caption, bool exclusive) =>
+        WithContent(c => c.AddImage(url, caption, exclusive));
+    IContentBuilder IContentBuilder.AddVideo(string embedUrl, string? caption, bool exclusive) =>
+        WithContent(c => c.AddVideo(embedUrl, caption, exclusive));
+    IContentBuilder IContentBuilder.AddGallery(Action<GalleryBuilder> configure, string? title, bool exclusive) =>
+        WithContent(c => c.AddGallery(configure, title, exclusive));
 
     public Article Build()
     {
