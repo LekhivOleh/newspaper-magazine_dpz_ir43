@@ -8,6 +8,7 @@ using CURSOVA.Application.Issues;
 using CURSOVA.Application.Profiles;
 using CURSOVA.Application.Recommendations;
 using CURSOVA.Application.Sharing;
+using CURSOVA.Application.Subscriptions;
 
 namespace CURSOVA.Application;
 
@@ -27,6 +28,7 @@ public static class DependencyInjection
         services.AddScoped<ISavedArticleService, SavedArticleService>();
         services.AddScoped<ICollectionService, CollectionService>();
         services.AddRecommendations();
+        services.AddScoped<ISubscriptionService, SubscriptionService>();
 
         return services;
     }

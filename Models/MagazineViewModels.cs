@@ -7,6 +7,7 @@ using CURSOVA.Application.Issues;
 using CURSOVA.Application.Profiles;
 using CURSOVA.Application.Recommendations;
 using CURSOVA.Application.Sharing;
+using CURSOVA.Application.Subscriptions;
 
 namespace CURSOVA.Models;
 
@@ -33,3 +34,5 @@ public record RecommendationsPageViewModel(
     IReadOnlyList<(string Key, string Title)> Strategies,
     string? ExplicitStrategy,
     IReadOnlyList<InterestDto> Interests);
+
+public record PremiumPageViewModel(IReadOnlyList<PlanDto> Plans, SubscriptionDto? Current);

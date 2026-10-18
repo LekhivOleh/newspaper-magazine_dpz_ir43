@@ -1329,3 +1329,154 @@ figcaption,
     height: 100%;
     background: var(--tp-gold);
 }
+
+/* Premium & subscriptions */
+
+.premium-link,
+.premium-badge {
+    margin-right: 0.75rem;
+    font-size: 0.85rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.premium-link {
+    color: var(--tp-gold) !important;
+}
+
+.premium-badge {
+    padding: 0.2rem 0.6rem;
+    background: var(--tp-gold);
+    color: var(--tp-ink) !important;
+}
+
+.premium-hero {
+    padding: 3rem 0 2rem;
+    text-align: center;
+}
+
+.premium-title {
+    font-family: var(--tp-serif);
+    font-weight: 900;
+    font-size: clamp(2.25rem, 6vw, 4rem);
+    line-height: 1.05;
+    margin: 0.5rem 0 1.5rem;
+}
+
+.premium-benefits {
+    display: inline-flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem 1.5rem;
+    padding: 0;
+    list-style: none;
+    color: var(--tp-muted);
+}
+
+.premium-benefits li::before {
+    content: "✓ ";
+    color: var(--tp-gold);
+    font-weight: 700;
+}
+
+.premium-current {
+    margin-top: 1rem;
+    font-weight: 600;
+}
+
+.premium-current a {
+    color: var(--tp-accent);
+}
+
+.plan-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(16rem, 20rem));
+    justify-content: center;
+    gap: 1.5rem;
+}
+
+.plan-card {
+    position: relative;
+    padding: 2rem 1.75rem;
+    background: #fff;
+    border: 1px solid var(--tp-line);
+    text-align: center;
+}
+
+.plan-card.is-best {
+    border: 2px solid var(--tp-gold);
+}
+
+.plan-badge {
+    position: absolute;
+    top: -0.8rem;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 0.2rem 0.75rem;
+    background: var(--tp-gold);
+    color: #fff;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    white-space: nowrap;
+}
+
+.plan-card h2 {
+    font-family: var(--tp-serif);
+    font-size: 1.4rem;
+    font-weight: 700;
+}
+
+.plan-price {
+    font-family: var(--tp-serif);
+    font-size: 3rem;
+    font-weight: 900;
+    margin: 0.5rem 0 0;
+}
+
+.plan-price span {
+    font-size: 1rem;
+    font-family: var(--tp-sans);
+    color: var(--tp-muted);
+}
+
+.plan-note {
+    color: var(--tp-muted);
+    font-size: 0.85rem;
+    margin-bottom: 1.5rem;
+}
+
+.subscription-card {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 1.75rem;
+    background: #fff;
+    border: 1px solid var(--tp-line);
+    border-left: 5px solid var(--tp-muted);
+}
+
+.subscription-card.state-active { border-left-color: #198754; }
+.subscription-card.state-cancelled { border-left-color: var(--tp-gold); }
+.subscription-card.state-expired { border-left-color: var(--tp-accent); }
+
+.subscription-state {
+    font-family: var(--tp-serif);
+    font-weight: 900;
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.subscription-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.payments-table {
+    background: #fff;
+}

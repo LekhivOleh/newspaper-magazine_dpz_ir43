@@ -1,10 +1,19 @@
 @using CURSOVA.Infrastructure.Identity
 @using Microsoft.AspNetCore.Identity
 @inject UserManager<ApplicationUser> UserManager
+@inject CURSOVA.Application.Subscriptions.ISubscriptionService Subscriptions
 
 @if (User.Identity?.IsAuthenticated == true)
 {
     var user = await UserManager.GetUserAsync(User);
+    @if (await Subscriptions.HasPremiumAccessAsync())
+    {
+        <a class="premium-badge" href="/profile/subscription" title="Ваша підписка">★ Premium</a>
+    }
+    else
+    {
+        <a class="premium-link" href="/premium">Premium</a>
+    }
     <div class="dropdown user-menu">
         <button class="btn btn-sm btn-outline-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
             @(user?.DisplayName ?? User.Identity.Name)
@@ -28,6 +37,7 @@ else
 {
     var onAccountPage = Context.Request.Path.StartsWithSegments("/account");
     string? returnUrl = onAccountPage ? Context.Request.Query["returnUrl"] : Context.Request.Path + Context.Request.QueryString;
+    <a class="premium-link" href="/premium">Premium</a>
     <div class="user-menu d-flex gap-2">
         <a class="btn btn-sm btn-outline-light" asp-controller="Account" asp-action="Login" asp-route-returnUrl="@returnUrl">Увійти</a>
         <a class="btn btn-sm btn-light" asp-controller="Account" asp-action="Register" asp-route-returnUrl="@returnUrl">Реєстрація</a>

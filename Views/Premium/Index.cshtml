@@ -1,0 +1,54 @@
+@using CURSOVA.Domain.Subscriptions.States
+@model PremiumPageViewModel
+@{
+    ViewData["Title"] = "Premium";
+    var current = Model.Current;
+    var canSubscribe = current is null || current.AllowedActions.Contains(SubscriptionAction.Subscribe);
+}
+
+<section class="premium-hero">
+    <p class="hero-kicker">TechPulse Premium</p>
+    <h1 class="premium-title">Читайте без реклами.<br />Отримуйте більше.</h1>
+    <ul class="premium-benefits">
+        <li>Жодної реклами на сайті</li>
+        <li>Ексклюзивні статті, фото та відео</li>
+        <li>Ранній доступ до «Журналу місяця»</li>
+    </ul>
+    @if (current is { HasPremium: true })
+    {
+        <p class="premium-current">★ У вас @current.StatusTitle.ToLowerInvariant() до @current.CurrentPeriodEnd?.ToLocalTime().ToString("d MMMM yyyy") · <a href="/profile/subscription">керувати</a></p>
+    }
+</section>
+
+<div class="plan-grid">
+    @foreach (var plan in Model.Plans)
+    {
+        var perMonth = Math.Round(plan.PriceUah / (plan.Days / 30.0));
+        <div class="plan-card @(plan.Key == "yearly" ? "is-best" : "")">
+            @if (plan.Key == "yearly")
+            {
+                <span class="plan-badge">Вигідно: 2 місяці в подарунок</span>
+            }
+            <h2>@plan.Title</h2>
+            <p class="plan-price">@plan.PriceUah <span>грн</span></p>
+            <p class="plan-note">@plan.Days днів · ≈ @perMonth грн/міс</p>
+
+            @if (User.Identity?.IsAuthenticated != true)
+            {
+                <a class="btn btn-dark w-100" href="/account/register?returnUrl=%2Fpremium">Зареєструватися й оформити</a>
+            }
+            else if (canSubscribe)
+            {
+                <form method="post" action="/premium/subscribe">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="plan" value="@plan.Key" />
+                    <button type="submit" class="btn btn-dark w-100">
+                        @(current is { HasPremium: true } ? "Продовжити на цей термін" : "Оформити")
+                    </button>
+                </form>
+            }
+        </div>
+    }
+</div>
+
+<p class="text-center text-muted small mt-4">Демо-режим: оплата імітується, кошти не списуються.</p>

@@ -7,6 +7,7 @@ using CURSOVA.Domain.Interactive;
 using CURSOVA.Domain.Issues;
 using CURSOVA.Domain.Profiles;
 using CURSOVA.Domain.Sharing;
+using CURSOVA.Domain.Subscriptions;
 using CURSOVA.Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -29,6 +30,7 @@ public class MagazineDbContext(DbContextOptions<MagazineDbContext> options)
     public DbSet<SavedArticle> SavedArticles => Set<SavedArticle>();
     public DbSet<Collection> Collections => Set<Collection>();
     public DbSet<UserInterest> UserInterests => Set<UserInterest>();
+    public DbSet<Subscription> Subscriptions => Set<Subscription>();
 
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
     {

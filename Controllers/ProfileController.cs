@@ -2,6 +2,7 @@ using CURSOVA.Application.Abstractions.Identity;
 using CURSOVA.Application.Common;
 using CURSOVA.Application.Profiles;
 using CURSOVA.Application.Recommendations;
+using CURSOVA.Application.Subscriptions;
 using CURSOVA.Domain.Common;
 using CURSOVA.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -15,6 +16,7 @@ public class ProfileController(
     ISavedArticleService saved,
     ICollectionService collections,
     IRecommendationService recommendations,
+    ISubscriptionService subscriptions,
     ICurrentUser currentUser) : Controller
 {
     [HttpGet("/profile")]
@@ -49,6 +51,10 @@ public class ProfileController(
             return RedirectToAction(nameof(Recommendations), new { strategy = (string?)null });
         }
     }
+
+    [HttpGet("/profile/subscription")]
+    public async Task<IActionResult> Subscription(CancellationToken ct) =>
+        View((currentUser.DisplayName ?? "Читач", await subscriptions.GetMineAsync(ct)));
 
     [HttpPost("/profile/interests")]
     public async Task<IActionResult> SaveInterests(int[] categoryIds, CancellationToken ct)

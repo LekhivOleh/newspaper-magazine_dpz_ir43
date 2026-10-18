@@ -11,6 +11,7 @@ public interface IUnitOfWork
     IShareRepository Shares { get; }
     ISavedArticleRepository SavedArticles { get; }
     ICollectionRepository Collections { get; }
+    ISubscriptionRepository Subscriptions { get; }
 
     Task<int> SaveChangesAsync(CancellationToken ct = default);
 }

@@ -31,6 +31,8 @@ public static class DependencyInjection
         services.AddScoped<ISavedArticleRepository, SavedArticleRepository>();
         services.AddScoped<ICollectionRepository, CollectionRepository>();
         services.AddScoped<IRecommendationDataSource, RecommendationDataSource>();
+        services.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
+        services.AddSingleton(TimeProvider.System);
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 
         services.AddIdentityServices();

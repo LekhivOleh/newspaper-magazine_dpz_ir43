@@ -1,0 +1,83 @@
+@using CURSOVA.Application.Subscriptions
+@using CURSOVA.Domain.Subscriptions
+@using CURSOVA.Domain.Subscriptions.States
+@model (string DisplayName, SubscriptionDto Subscription)
+@{
+    ViewData["Title"] = "Підписка";
+    var s = Model.Subscription;
+    var message = TempData[CURSOVA.Controllers.PremiumController.MessageKey] as string;
+    var stateClass = s.Status.ToString().ToLowerInvariant();
+}
+
+<partial name="_ProfileHeader" model="Model.DisplayName" />
+
+@if (message is not null)
+{
+    <div class="alert alert-info py-2">@message</div>
+}
+
+<div class="subscription-card state-@stateClass">
+    <div>
+        <p class="hero-kicker mb-1">Стан підписки</p>
+        <h2 class="subscription-state">@s.StatusTitle</h2>
+        @if (s.Plan is { } plan)
+        {
+            <p class="mb-1">Тариф: <strong>@plan.Title</strong> (@plan.PriceUah грн / @plan.Days днів)</p>
+        }
+        @if (s.CurrentPeriodEnd is { } end)
+        {
+            <p class="mb-0 text-muted">
+                @(s.Status switch
+                {
+                    SubscriptionStatus.Active => "Наступне автопродовження",
+                    SubscriptionStatus.Cancelled => "Premium діє до",
+                    _ => "Завершився"
+                }): @end.ToLocalTime().ToString("d MMMM yyyy, HH:mm")
+            </p>
+        }
+        @if (s.Status == SubscriptionStatus.Free)
+        {
+            <p class="mb-0 text-muted">Ви читаєте безкоштовні статті з рекламою.</p>
+        }
+    </div>
+
+    <div class="subscription-actions">
+        @if (s.AllowedActions.Contains(SubscriptionAction.Subscribe))
+        {
+            <a class="btn btn-dark" href="/premium">@(s.HasPremium ? "Продовжити" : "Оформити Premium")</a>
+        }
+        @if (s.AllowedActions.Contains(SubscriptionAction.Resume))
+        {
+            <form method="post" action="/premium/resume">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="btn btn-outline-dark">Увімкнути автопродовження</button>
+            </form>
+        }
+        @if (s.AllowedActions.Contains(SubscriptionAction.Cancel))
+        {
+            <form method="post" action="/premium/cancel" onsubmit="return confirm('Вимкнути автопродовження? Premium діятиме до кінця оплаченого періоду.')">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="btn btn-link text-danger">Скасувати автопродовження</button>
+            </form>
+        }
+    </div>
+</div>
+
+@if (s.Payments.Count > 0)
+{
+    <h2 class="section-title mt-5">Історія оплат</h2>
+    <table class="table payments-table">
+        <thead><tr><th>Дата</th><th>Операція</th><th>Тариф</th><th class="text-end">Сума</th></tr></thead>
+        <tbody>
+            @foreach (var p in s.Payments)
+            {
+                <tr>
+                    <td>@p.PaidAt.ToLocalTime().ToString("d MMM yyyy, HH:mm")</td>
+                    <td>@(p.Kind switch { PaymentKind.Purchase => "Оплата", PaymentKind.Renewal => "Автопродовження", _ => "Подарунок від редакції" })</td>
+                    <td>@(SubscriptionPlan.Find(p.PlanKey)?.Title ?? "—")</td>
+                    <td class="text-end">@p.AmountUah грн</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

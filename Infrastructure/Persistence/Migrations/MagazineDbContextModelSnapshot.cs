@@ -650,6 +650,73 @@ namespace CURSOVA.Infrastructure.Persistence.Migrations
                     b.ToTable("ShareEvents");
                 });
 
+            modelBuilder.Entity("CURSOVA.Domain.Subscriptions.Subscription", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime?>("CancelledAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("CurrentPeriodEnd")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("PlanKey")
+                        .HasMaxLength(20)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("StartedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
+
+                    b.ToTable("Subscriptions");
+                });
+
+            modelBuilder.Entity("CURSOVA.Domain.Subscriptions.SubscriptionPayment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("AmountUah")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Kind")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("PaidAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("PlanKey")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("SubscriptionId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SubscriptionId");
+
+                    b.ToTable("SubscriptionPayments", (string)null);
+                });
+
             modelBuilder.Entity("CURSOVA.Infrastructure.Identity.ApplicationUser", b =>
                 {
                     b.Property<int>("Id")
@@ -1145,6 +1212,24 @@ namespace CURSOVA.Infrastructure.Persistence.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("CURSOVA.Domain.Subscriptions.Subscription", b =>
+                {
+                    b.HasOne("CURSOVA.Infrastructure.Identity.ApplicationUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("CURSOVA.Domain.Subscriptions.SubscriptionPayment", b =>
+                {
+                    b.HasOne("CURSOVA.Domain.Subscriptions.Subscription", null)
+                        .WithMany("Payments")
+                        .HasForeignKey("SubscriptionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole<int>", null)
@@ -1252,6 +1337,11 @@ namespace CURSOVA.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("CURSOVA.Domain.Profiles.Collection", b =>
                 {
                     b.Navigation("Items");
+                });
+
+            modelBuilder.Entity("CURSOVA.Domain.Subscriptions.Subscription", b =>
+                {
+                    b.Navigation("Payments");
                 });
 
             modelBuilder.Entity("CURSOVA.Domain.Interactive.Polls.Poll", b =>
