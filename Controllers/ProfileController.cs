@@ -10,7 +10,7 @@ namespace CURSOVA.Controllers;
 
 [Authorize]
 [AutoValidateAntiforgeryToken]
-public class ProfileController(ISavedArticleService saved, ICurrentUser currentUser) : Controller
+public class ProfileController(ISavedArticleService saved, ICollectionService collections, ICurrentUser currentUser) : Controller
 {
     [HttpGet("/profile")]
     public IActionResult Index() => RedirectToAction(nameof(Saved));
@@ -22,6 +22,10 @@ public class ProfileController(ISavedArticleService saved, ICurrentUser currentU
         var pager = new PagerViewModel(result.Page, result.TotalPages, p => Url.Action(nameof(Saved), new { page = p })!);
         return View(new SavedPageViewModel(currentUser.DisplayName ?? "Читач", result, pager));
     }
+
+    [HttpGet("/profile/collections")]
+    public async Task<IActionResult> Collections(CancellationToken ct) =>
+        View((currentUser.DisplayName ?? "Читач", await collections.ListMineAsync(ct)));
 
     [HttpPost("/article/{articleId:int}/save")]
     public async Task<IActionResult> Toggle(int articleId, string? returnUrl, CancellationToken ct)

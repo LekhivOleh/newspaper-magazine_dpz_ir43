@@ -19,6 +19,7 @@ public class ArticleController(
     ICommentService comments,
     ISharingFacade sharing,
     ISavedArticleService saved,
+    ICollectionService collections,
     IAppUrlProvider urls) : Controller
 {
     [HttpGet("{slug}")]
@@ -51,6 +52,7 @@ public class ArticleController(
                 await sharing.GetLinksAsync(ShareableType.Article, article.Summary.Id, ct),
                 (await sharing.GetStatsAsync(ShareableType.Article, article.Summary.Id, ct)).Total,
                 urls.ArticleUrl(article.Summary.Slug)),
-            await saved.IsSavedAsync(article.Summary.Id, ct)));
+            await saved.IsSavedAsync(article.Summary.Id, ct),
+            await collections.ChoicesForArticleAsync(article.Summary.Id, ct)));
     }
 }

@@ -1,0 +1,111 @@
+@using CURSOVA.Application.Profiles
+@model CollectionDto
+@{
+    var c = Model.Summary;
+    ViewData["Title"] = c.Name;
+    var message = TempData[CURSOVA.Controllers.CollectionController.MessageKey] as string;
+}
+
+<div class="collection-page">
+    <header class="page-header">
+        <p class="hero-kicker">
+            @if (c.IsMine)
+            {
+                <a asp-controller="Profile" asp-action="Collections">Мої підбірки</a>
+                <span>· @(c.IsPublic ? "публічна" : "приватна")</span>
+            }
+            else
+            {
+                <a href="/collections">Підбірки читачів</a>
+                <span>· від @c.OwnerName</span>
+            }
+        </p>
+        <h1 class="page-title">@c.Name</h1>
+        @if (c.Description is not null)
+        {
+            <p class="hero-lead">@c.Description</p>
+        }
+        @if (c.CopiedFromId is { } originalId && c.IsMine)
+        {
+            <p class="small text-muted">Копія <a href="/collections/@originalId">іншої підбірки</a></p>
+        }
+
+        @if (!c.IsMine && User.Identity?.IsAuthenticated == true)
+        {
+            <form method="post" action="/collections/@c.Id/copy">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="btn btn-dark">⧉ Скопіювати собі</button>
+            </form>
+        }
+    </header>
+
+    @if (message is not null)
+    {
+        <div class="alert alert-info py-2">@message</div>
+    }
+
+    @if (c.IsMine)
+    {
+        <details class="collection-settings">
+            <summary>Налаштування підбірки</summary>
+            <form method="post" action="/collections/@c.Id/edit" class="mt-3">
+                @Html.AntiForgeryToken()
+                <input name="name" value="@c.Name" class="form-control mb-2" maxlength="100" required />
+                <textarea name="description" class="form-control mb-2" rows="2" maxlength="500" placeholder="Опис">@c.Description</textarea>
+                <div class="form-check mb-3">
+                    <input type="checkbox" name="isPublic" value="true" id="isPublic" class="form-check-input" checked="@c.IsPublic" />
+                    <label for="isPublic" class="form-check-label">Публічна — видно всім і можна скопіювати</label>
+                </div>
+                <button type="submit" class="btn btn-dark btn-sm">Зберегти</button>
+            </form>
+            <form method="post" action="/collections/@c.Id/delete" class="mt-2" onsubmit="return confirm('Видалити підбірку? Статті залишаться на сайті.')">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="btn btn-link btn-sm text-danger p-0">Видалити підбірку</button>
+            </form>
+        </details>
+    }
+
+    @if (Model.Items.Count == 0)
+    {
+        <p class="empty-state">
+            Підбірка порожня.
+            @if (c.IsMine)
+            {
+                <span>Відкрийте будь-яку статтю й натисніть «До підбірки».</span>
+            }
+        </p>
+    }
+
+    <ol class="collection-items">
+        @for (var i = 0; i < Model.Items.Count; i++)
+        {
+            var item = Model.Items[i];
+            <li class="collection-item">
+                <span class="collection-position">@(i + 1)</span>
+                <div class="collection-item-body">
+                    <a class="kicker" href="/category/@item.Article.Category.Slug">@item.Article.Category.Name</a>
+                    <h3><a href="/article/@item.Article.Slug">@item.Article.Title</a></h3>
+                    <p class="text-muted mb-1">@item.Article.Lead</p>
+                    @if (item.Note is not null)
+                    {
+                        <p class="editor-note">@item.Note</p>
+                    }
+                </div>
+                @if (c.IsMine)
+                {
+                    <div class="collection-item-actions">
+                        <form method="post" action="/collections/@c.Id/items/@item.Article.Id/move">
+                            @Html.AntiForgeryToken()
+                            <button name="delta" value="-1" class="btn btn-sm btn-light" title="Вище" disabled="@(i == 0)">↑</button>
+                            <button name="delta" value="1" class="btn btn-sm btn-light" title="Нижче" disabled="@(i == Model.Items.Count - 1)">↓</button>
+                        </form>
+                        <form method="post" action="/collections/@c.Id/items/@item.Article.Id/remove">
+                            @Html.AntiForgeryToken()
+                            <button class="btn btn-sm btn-light text-danger" title="Прибрати">✕</button>
+                        </form>
+                    </div>
+                }
+            </li>
+        }
+    </ol>
+</div>

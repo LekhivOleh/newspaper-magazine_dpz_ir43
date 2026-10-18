@@ -1,0 +1,45 @@
+@using CURSOVA.Application.Profiles
+@model (int ArticleId, IReadOnlyList<CollectionChoiceDto> Choices)
+@{
+    var returnUrl = Context.Request.Path.ToString();
+    var available = Model.Choices.Where(c => !c.ContainsArticle).ToList();
+    var containing = Model.Choices.Where(c => c.ContainsArticle).ToList();
+}
+
+<details class="add-to-collection">
+    <summary class="btn-save">＋ До підбірки</summary>
+    <div class="add-to-collection-panel">
+        @if (containing.Count > 0)
+        {
+            <p class="small text-muted mb-2">
+                Уже в: @foreach (var c in containing)
+                {
+                    <a href="/collections/@c.Id">@c.Name</a>@(c == containing[^1] ? "" : ", ")
+                }
+            </p>
+        }
+        @if (available.Count > 0)
+        {
+            <form method="post" action="/collections/add" class="d-flex gap-2 mb-2">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="articleId" value="@Model.ArticleId" />
+                <input type="hidden" name="returnUrl" value="@returnUrl" />
+                <select name="collectionId" class="form-select form-select-sm" required>
+                    <option value="">— оберіть підбірку —</option>
+                    @foreach (var c in available)
+                    {
+                        <option value="@c.Id">@c.Name</option>
+                    }
+                </select>
+                <button type="submit" class="btn btn-sm btn-dark">Додати</button>
+            </form>
+        }
+        <form method="post" action="/collections" class="d-flex gap-2">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="articleId" value="@Model.ArticleId" />
+            <input type="hidden" name="returnUrl" value="@returnUrl" />
+            <input name="name" class="form-control form-control-sm" placeholder="Нова підбірка" maxlength="100" required />
+            <button type="submit" class="btn btn-sm btn-outline-dark text-nowrap">Створити</button>
+        </form>
+    </div>
+</details>

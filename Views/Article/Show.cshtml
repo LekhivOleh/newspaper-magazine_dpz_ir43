@@ -31,11 +31,14 @@
             </div>
             @if (User.Identity?.IsAuthenticated == true)
             {
-                <form method="post" action="/article/@article.Id/save" class="ms-auto">
+                <div class="ms-auto d-flex gap-2 align-items-start">
+                <partial name="_AddToCollection" model="(article.Id, Model.Collections)" />
+                <form method="post" action="/article/@article.Id/save">
                     @Html.AntiForgeryToken()
                     <input type="hidden" name="returnUrl" value="@returnUrl" />
                     <button type="submit" class="btn-save @(Model.IsSaved ? "is-saved" : "")">@(Model.IsSaved ? "★ Збережено" : "☆ Зберегти")</button>
                 </form>
+                </div>
             }
             else
             {
@@ -45,6 +48,10 @@
         @if (saveMessage is not null)
         {
             <p class="save-message">@saveMessage <a asp-controller="Profile" asp-action="Saved">Мій профіль →</a></p>
+        }
+        @if (TempData[CURSOVA.Controllers.CollectionController.MessageKey] is string collectionMessage)
+        {
+            <p class="save-message">@collectionMessage <a asp-controller="Profile" asp-action="Collections">Мої підбірки →</a></p>
         }
     </header>
 

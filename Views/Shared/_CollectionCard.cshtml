@@ -1,0 +1,30 @@
+@using CURSOVA.Application.Profiles
+@model CollectionSummaryDto
+
+<a class="collection-card" href="/collections/@Model.Id">
+    <div class="collection-cover">
+        @if (Model.CoverImageUrl is not null)
+        {
+            <img src="@Model.CoverImageUrl" alt="" loading="lazy" />
+        }
+        <span class="collection-count">@Model.ItemCount</span>
+    </div>
+    <div class="collection-card-body">
+        <h3>@Model.Name</h3>
+        @if (Model.Description is not null)
+        {
+            <p>@Model.Description</p>
+        }
+        <span class="collection-meta">
+            @if (Model.IsMine)
+            {
+                @(Model.IsPublic ? "Публічна" : "Приватна")
+            }
+            else
+            {
+                <span>від @Model.OwnerName</span>
+            }
+            · @UkrainianPlural.Format(Model.ItemCount, "стаття", "статті", "статей")
+        </span>
+    </div>
+</a>

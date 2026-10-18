@@ -1,0 +1,25 @@
+@using CURSOVA.Application.Profiles
+@model IReadOnlyList<CollectionSummaryDto>
+@{
+    ViewData["Title"] = "Підбірки читачів";
+}
+
+<header class="page-header">
+    <p class="hero-kicker">Спільнота</p>
+    <h1 class="page-title">Підбірки читачів</h1>
+    <p class="hero-lead">Добірки статей від інших читачів TechPulse. Сподобалась — скопіюйте собі й доповніть своїм.</p>
+</header>
+
+@if (Model.Count == 0)
+{
+    <p class="empty-state">Публічних підбірок ще немає. Створіть першу у своєму профілі!</p>
+}
+else
+{
+    <div class="collection-grid">
+        @foreach (var collection in Model)
+        {
+            <partial name="_CollectionCard" model="collection" />
+        }
+    </div>
+}

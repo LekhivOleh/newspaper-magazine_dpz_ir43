@@ -10,6 +10,7 @@ public interface IUnitOfWork
     ICommentRepository Comments { get; }
     IShareRepository Shares { get; }
     ISavedArticleRepository SavedArticles { get; }
+    ICollectionRepository Collections { get; }
 
     Task<int> SaveChangesAsync(CancellationToken ct = default);
 }

@@ -17,7 +17,8 @@ public record CategoryPageViewModel(CategoryDto Category, PagedResult<ArticleSum
 
 public record SearchViewModel(string? Query, PagedResult<ArticleSummaryDto>? Results, PagerViewModel? Pager);
 
-public record ArticlePageViewModel(ArticleDetailsDto Article, IReadOnlyList<ArticleSummaryDto> Related, PollDto? Poll, IReadOnlyList<CommentDto> Comments, ShareBarViewModel Share, bool IsSaved);
+public record ArticlePageViewModel(ArticleDetailsDto Article, IReadOnlyList<ArticleSummaryDto> Related, PollDto? Poll, IReadOnlyList<CommentDto> Comments, ShareBarViewModel Share, bool IsSaved,
+    IReadOnlyList<CollectionChoiceDto> Collections);
 
 public record InteractiveHubViewModel(IReadOnlyList<QuizSummaryDto> Quizzes, IReadOnlyList<PollDto> Polls);
 

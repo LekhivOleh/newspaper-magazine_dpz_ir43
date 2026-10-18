@@ -24,6 +24,7 @@ public static class DependencyInjection
         services.AddSingleton<ICommentModerator, ModerationPipeline>();
         services.AddScoped<ISharingFacade, SharingFacade>();
         services.AddScoped<ISavedArticleService, SavedArticleService>();
+        services.AddScoped<ICollectionService, CollectionService>();
 
         return services;
     }

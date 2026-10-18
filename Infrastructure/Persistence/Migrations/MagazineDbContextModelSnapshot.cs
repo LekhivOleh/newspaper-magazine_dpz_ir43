@@ -499,6 +499,81 @@ namespace CURSOVA.Infrastructure.Persistence.Migrations
                     b.UseTphMappingStrategy();
                 });
 
+            modelBuilder.Entity("CURSOVA.Domain.Profiles.Collection", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("CopiedFromId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsPublic")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("OwnerName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CopiedFromId");
+
+                    b.HasIndex("IsPublic", "CreatedAt");
+
+                    b.HasIndex("UserId", "CreatedAt");
+
+                    b.ToTable("Collections");
+                });
+
+            modelBuilder.Entity("CURSOVA.Domain.Profiles.CollectionItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("AddedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("ArticleId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("CollectionId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Note")
+                        .HasMaxLength(300)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Position")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ArticleId");
+
+                    b.HasIndex("CollectionId", "ArticleId")
+                        .IsUnique();
+
+                    b.ToTable("CollectionItems", (string)null);
+                });
+
             modelBuilder.Entity("CURSOVA.Domain.Profiles.SavedArticle", b =>
                 {
                     b.Property<int>("Id")
@@ -989,6 +1064,35 @@ namespace CURSOVA.Infrastructure.Persistence.Migrations
                     b.Navigation("Parent");
                 });
 
+            modelBuilder.Entity("CURSOVA.Domain.Profiles.Collection", b =>
+                {
+                    b.HasOne("CURSOVA.Domain.Profiles.Collection", null)
+                        .WithMany()
+                        .HasForeignKey("CopiedFromId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("CURSOVA.Infrastructure.Identity.ApplicationUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("CURSOVA.Domain.Profiles.CollectionItem", b =>
+                {
+                    b.HasOne("CURSOVA.Domain.Articles.Article", null)
+                        .WithMany()
+                        .HasForeignKey("ArticleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CURSOVA.Domain.Profiles.Collection", null)
+                        .WithMany("Items")
+                        .HasForeignKey("CollectionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("CURSOVA.Domain.Profiles.SavedArticle", b =>
                 {
                     b.HasOne("CURSOVA.Domain.Articles.Article", null)
@@ -1106,6 +1210,11 @@ namespace CURSOVA.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("CURSOVA.Domain.Issues.Issue", b =>
                 {
                     b.Navigation("Components");
+                });
+
+            modelBuilder.Entity("CURSOVA.Domain.Profiles.Collection", b =>
+                {
+                    b.Navigation("Items");
                 });
 
             modelBuilder.Entity("CURSOVA.Domain.Interactive.Polls.Poll", b =>

@@ -1,0 +1,50 @@
+@using CURSOVA.Application.Profiles
+@model (string DisplayName, IReadOnlyList<CollectionSummaryDto> Collections)
+@{
+    ViewData["Title"] = "Мої підбірки";
+    var message = TempData[CURSOVA.Controllers.CollectionController.MessageKey] as string;
+}
+
+<partial name="_ProfileHeader" model="Model.DisplayName" />
+
+@if (message is not null)
+{
+    <div class="alert alert-info py-2">@message</div>
+}
+
+<div class="collections-layout">
+    <div>
+        @if (Model.Collections.Count == 0)
+        {
+            <div class="empty-state">
+                <p>У вас ще немає підбірок.</p>
+                <p class="small">Створіть першу — наприклад, «Мої улюблені огляди» — або <a href="/collections">скопіюйте чужу</a>.</p>
+            </div>
+        }
+        else
+        {
+            <div class="collection-grid">
+                @foreach (var collection in Model.Collections)
+                {
+                    <partial name="_CollectionCard" model="collection" />
+                }
+            </div>
+        }
+    </div>
+
+    <aside class="collection-create">
+        <h2 class="h5 fw-bold">Нова підбірка</h2>
+        <form method="post" action="/collections">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="returnUrl" value="/profile/collections" />
+            <input name="name" class="form-control mb-2" placeholder="Мої улюблені огляди" maxlength="100" required />
+            <textarea name="description" class="form-control mb-2" rows="2" maxlength="500" placeholder="Опис (необов'язково)"></textarea>
+            <div class="form-check mb-3">
+                <input type="checkbox" name="isPublic" value="true" id="newPublic" class="form-check-input" />
+                <label for="newPublic" class="form-check-label small">Зробити публічною</label>
+            </div>
+            <button type="submit" class="btn btn-dark w-100">Створити</button>
+        </form>
+        <p class="small text-muted mt-3 mb-0"><a href="/collections">Підбірки інших читачів →</a></p>
+    </aside>
+</div>
