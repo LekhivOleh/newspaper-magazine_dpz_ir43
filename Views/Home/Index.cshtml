@@ -46,6 +46,11 @@
     </section>
 }
 
+@if (Model.Ad is { } homeAd)
+{
+    <div class="section"><partial name="_AdCard" model="homeAd" /></div>
+}
+
 <section class="section">
     <h2 class="section-title">@(Model.Pager.Page == 1 ? "Свіжі матеріали" : "Архів")</h2>
     <partial name="_ArticleGrid" model="Model.Articles" />

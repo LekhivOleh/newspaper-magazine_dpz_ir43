@@ -1,3 +1,4 @@
+using CURSOVA.Domain.Advertising;
 using CURSOVA.Domain.Articles;
 using CURSOVA.Domain.Articles.Blocks;
 using CURSOVA.Domain.Authors;
@@ -31,6 +32,8 @@ public class MagazineDbContext(DbContextOptions<MagazineDbContext> options)
     public DbSet<Collection> Collections => Set<Collection>();
     public DbSet<UserInterest> UserInterests => Set<UserInterest>();
     public DbSet<Subscription> Subscriptions => Set<Subscription>();
+    public DbSet<Partner> Partners => Set<Partner>();
+    public DbSet<Ad> Ads => Set<Ad>();
 
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
     {

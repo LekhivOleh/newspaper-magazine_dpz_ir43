@@ -60,6 +60,7 @@ public class ArticleService(IUnitOfWork uow) : IArticleService
             .By(request.AuthorId)
             .WithAccess(request.AccessLevel)
             .Build();
+        article.SetSponsor(request.SponsorPartnerId);
         await EnsureUniqueSlugAsync(article, ct);
 
         uow.Articles.Add(article);
@@ -76,6 +77,7 @@ public class ArticleService(IUnitOfWork uow) : IArticleService
         article.MoveToCategory(request.CategoryId);
         article.AssignAuthor(request.AuthorId);
         article.SetAccessLevel(request.AccessLevel);
+        article.SetSponsor(request.SponsorPartnerId);
         await EnsureUniqueSlugAsync(article, ct);
 
         await uow.SaveChangesAsync(ct);

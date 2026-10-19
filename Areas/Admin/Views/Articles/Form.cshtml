@@ -48,6 +48,13 @@
         <input asp-for="CoverImageUrl" class="form-control" placeholder="https://…" />
         <span asp-validation-for="CoverImageUrl" class="text-danger small"></span>
     </div>
+    <div class="mb-3">
+        <label asp-for="SponsorPartnerId" class="form-label"></label>
+        <select asp-for="SponsorPartnerId" asp-items='(IEnumerable<SelectListItem>)ViewData["Partners"]!' class="form-select">
+            <option value="">— звичайна редакційна стаття —</option>
+        </select>
+        <div class="form-text">Спонсорована стаття отримує плашку «Партнерський матеріал» для всіх читачів.</div>
+    </div>
     <div class="mb-4">
         <label class="form-label d-block">Доступ</label>
         <div class="btn-group" role="group">

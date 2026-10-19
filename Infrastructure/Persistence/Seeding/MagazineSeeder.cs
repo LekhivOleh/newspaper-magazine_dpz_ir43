@@ -1,3 +1,4 @@
+using CURSOVA.Domain.Advertising;
 using CURSOVA.Domain.Articles.Building;
 using CURSOVA.Domain.Authors;
 using CURSOVA.Domain.Categories;
@@ -17,6 +18,7 @@ public static class MagazineSeeder
         await SeedIssuesAsync(db, ct);
         await SeedPollsAsync(db, ct);
         await SeedQuizzesAsync(db, ct);
+        await SeedAdvertisingAsync(db, ct);
     }
 
     private static async Task SeedCatalogAsync(MagazineDbContext db, CancellationToken ct)
@@ -301,6 +303,32 @@ public static class MagazineSeeder
         ]);
 
         db.InteractiveElements.AddRange(gadget, knowledge, addiction);
+        await db.SaveChangesAsync(ct);
+    }
+
+    private static async Task SeedAdvertisingAsync(MagazineDbContext db, CancellationToken ct)
+    {
+        if (await db.Partners.AnyAsync(ct))
+            return;
+
+        // Fictional brands for the demo; example.com links never lead to a real shop.
+        var shop = new Partner("Гаджетарня", "https://example.com/gadgetarnia", "Техніка для навчання та роботи", Img("logo-gadgetarnia", 160, 160));
+        var cloud = new Partner("CloudNest", "https://example.com/cloudnest", "Хмарний хостинг для розробників", Img("logo-cloudnest", 160, 160));
+        db.Partners.AddRange(shop, cloud);
+        await db.SaveChangesAsync(ct);
+
+        var aiCategoryId = await db.Categories.Where(c => c.Slug == "shtuchnyi-intelekt").Select(c => (int?)c.Id).FirstOrDefaultAsync(ct);
+        db.Ads.AddRange(
+            new Ad("Ноутбуки для навчання зі знижкою до 15%", "https://example.com/gadgetarnia/laptops", "Обрати ноутбук",
+                "Студентська пропозиція до кінця місяця.", Img("ad-laptops", 800, 400), shop.Id),
+            new Ad("Запустіть свою AI-модель у хмарі за 5 хвилин", "https://example.com/cloudnest/ai", "Спробувати безкоштовно",
+                "GPU-сервери з погодинною оплатою.", Img("ad-cloud", 800, 400), cloud.Id, aiCategoryId),
+            new Ad("Втомилися від реклами?", "/premium", "Premium від 99 грн",
+                "Читайте TechPulse без реклами та з ексклюзивними матеріалами."));
+
+        var laptopArticle = await db.Articles.FirstOrDefaultAsync(a => a.Slug == "iak-obraty-noutbuk-dlia-navchannia-u-2026-rotsi", ct);
+        laptopArticle?.SetSponsor(shop.Id);
+
         await db.SaveChangesAsync(ct);
     }
 

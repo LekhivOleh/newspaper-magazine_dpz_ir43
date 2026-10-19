@@ -12,6 +12,7 @@ public interface IUnitOfWork
     ISavedArticleRepository SavedArticles { get; }
     ICollectionRepository Collections { get; }
     ISubscriptionRepository Subscriptions { get; }
+    IAdvertisingRepository Advertising { get; }
 
     Task<int> SaveChangesAsync(CancellationToken ct = default);
 }

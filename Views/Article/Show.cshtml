@@ -63,33 +63,7 @@
     }
 
     <div class="article-content">
-        @for (var i = 0; i < Model.Article.Blocks.Count; i++)
-        {
-            var block = Model.Article.Blocks[i];
-            ViewData["BlockIndex"] = i;
-            @if (block.IsExclusive && block is not LockedBlockDto)
-            {
-                <span class="exclusive-badge">★ Ексклюзив для Premium</span>
-            }
-            switch (block)
-            {
-                case LockedBlockDto locked:
-                    <partial name="Blocks/_Locked" model="locked" />
-                    break;
-                case TextBlockDto text:
-                    <partial name="Blocks/_Text" model="text" />
-                    break;
-                case ImageBlockDto image:
-                    <partial name="Blocks/_Image" model="image" />
-                    break;
-                case VideoBlockDto video:
-                    <partial name="Blocks/_Video" model="video" />
-                    break;
-                case GalleryBlockDto gallery:
-                    <partial name="Blocks/_Gallery" model="gallery" view-data="ViewData" />
-                    break;
-            }
-        }
+        <partial name="_Segments" model="Model.Page" />
     </div>
 
     @if (Model.Article.Access is { IsFull: false } access)

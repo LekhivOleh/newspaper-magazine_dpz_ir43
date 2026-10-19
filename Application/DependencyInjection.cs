@@ -1,6 +1,8 @@
 using CURSOVA.Application.Abstractions.Identity;
+using CURSOVA.Application.Advertising;
 using CURSOVA.Application.Articles;
 using CURSOVA.Application.Articles.Access;
+using CURSOVA.Application.Articles.Presentation;
 using CURSOVA.Application.Authors;
 using CURSOVA.Application.Categories;
 using CURSOVA.Application.Comments;
@@ -36,6 +38,14 @@ public static class DependencyInjection
         services.AddScoped<ICollectionService, CollectionService>();
         services.AddRecommendations();
         services.AddScoped<ISubscriptionService, SubscriptionService>();
+        services.AddScoped<IAdvertisingService, AdvertisingService>();
+
+        // Decorator chain for the article page: sponsor layer around ad slots around the plain article.
+        services.AddScoped<IArticlePageComposer>(sp =>
+        {
+            var ads = sp.GetRequiredService<IAdvertisingService>();
+            return new SponsoredContentDecorator(new AdSlotsDecorator(new PlainArticleComposer(), ads), ads);
+        });
 
         return services;
     }

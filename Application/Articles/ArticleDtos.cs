@@ -20,7 +20,8 @@ public record ArticleSummaryDto(
     AccessLevel AccessLevel,
     DateTime CreatedAt,
     DateTime? PublishedAt,
-    int ViewCount);
+    int ViewCount,
+    int? SponsorPartnerId = null);
 
 public record ArticleDetailsDto(ArticleSummaryDto Summary, IReadOnlyList<BlockDto> Blocks, ContentAccessDto? Access = null);
 
@@ -75,4 +76,5 @@ public record SaveArticleRequest(
     [Range(1, int.MaxValue)] int CategoryId,
     [Range(1, int.MaxValue)] int AuthorId,
     [MaxLength(500), Url] string? CoverImageUrl,
-    AccessLevel AccessLevel = AccessLevel.Free);
+    AccessLevel AccessLevel = AccessLevel.Free,
+    int? SponsorPartnerId = null);

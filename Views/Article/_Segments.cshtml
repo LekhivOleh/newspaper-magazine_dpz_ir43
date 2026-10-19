@@ -1,0 +1,66 @@
+@using CURSOVA.Application.Articles.Presentation
+@model ArticlePage
+
+@for (var i = 0; i < Model.Segments.Count; i++)
+{
+    ViewData["BlockIndex"] = i;
+    switch (Model.Segments[i])
+    {
+        case SponsorDisclosureSegment sponsor:
+            <div class="sponsor-disclosure">
+                @if (sponsor.Partner.LogoUrl is not null)
+                {
+                    <img src="@sponsor.Partner.LogoUrl" alt="" />
+                }
+                <span>Партнерський матеріал від <a href="@sponsor.Partner.WebsiteUrl" rel="sponsored noopener" target="_blank">@sponsor.Partner.Name</a></span>
+            </div>
+            break;
+
+        case AdSegment ad:
+            <partial name="_AdCard" model="ad.Ad" />
+            break;
+
+        case PartnerPromoSegment promo:
+            <section class="partner-promo">
+                <p class="partner-promo-title">Матеріал підготовлено за підтримки <strong>@promo.Partner.Name</strong></p>
+                @if (promo.Partner.Tagline is not null)
+                {
+                    <p class="text-muted mb-2">@promo.Partner.Tagline</p>
+                }
+                @if (promo.Ad is not null)
+                {
+                    <partial name="_AdCard" model="promo.Ad" />
+                }
+                else
+                {
+                    <a href="@promo.Partner.WebsiteUrl" rel="sponsored noopener" target="_blank">Перейти на сайт партнера →</a>
+                }
+            </section>
+            break;
+
+        case ContentSegment { Block: var block }:
+            @if (block.IsExclusive && block is not LockedBlockDto)
+            {
+                <span class="exclusive-badge">★ Ексклюзив для Premium</span>
+            }
+            switch (block)
+            {
+                case LockedBlockDto locked:
+                    <partial name="Blocks/_Locked" model="locked" />
+                    break;
+                case TextBlockDto text:
+                    <partial name="Blocks/_Text" model="text" />
+                    break;
+                case ImageBlockDto image:
+                    <partial name="Blocks/_Image" model="image" />
+                    break;
+                case VideoBlockDto video:
+                    <partial name="Blocks/_Video" model="video" />
+                    break;
+                case GalleryBlockDto gallery:
+                    <partial name="Blocks/_Gallery" model="gallery" view-data="ViewData" />
+                    break;
+            }
+            break;
+    }
+}

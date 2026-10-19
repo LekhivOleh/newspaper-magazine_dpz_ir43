@@ -1,4 +1,6 @@
+using CURSOVA.Application.Advertising;
 using CURSOVA.Application.Articles;
+using CURSOVA.Application.Articles.Presentation;
 using CURSOVA.Application.Categories;
 using CURSOVA.Application.Comments;
 using CURSOVA.Application.Common;
@@ -13,14 +15,14 @@ namespace CURSOVA.Models;
 
 public record PagerViewModel(int Page, int TotalPages, Func<int, string> PageUrl);
 
-public record HomeViewModel(IssueSummaryDto? FeaturedIssue, RecommendationsDto? Recommendations, ArticleSummaryDto? Featured, IReadOnlyList<ArticleSummaryDto> Articles, PagerViewModel Pager);
+public record HomeViewModel(IssueSummaryDto? FeaturedIssue, RecommendationsDto? Recommendations, AdDto? Ad, ArticleSummaryDto? Featured, IReadOnlyList<ArticleSummaryDto> Articles, PagerViewModel Pager);
 
 public record CategoryPageViewModel(CategoryDto Category, PagedResult<ArticleSummaryDto> Articles, PagerViewModel Pager);
 
 public record SearchViewModel(string? Query, PagedResult<ArticleSummaryDto>? Results, PagerViewModel? Pager);
 
 public record ArticlePageViewModel(ArticleDetailsDto Article, IReadOnlyList<ArticleSummaryDto> Related, PollDto? Poll, IReadOnlyList<CommentDto> Comments, ShareBarViewModel Share, bool IsSaved,
-    IReadOnlyList<CollectionChoiceDto> Collections);
+    IReadOnlyList<CollectionChoiceDto> Collections, ArticlePage Page);
 
 public record InteractiveHubViewModel(IReadOnlyList<QuizSummaryDto> Quizzes, IReadOnlyList<PollDto> Polls);
 

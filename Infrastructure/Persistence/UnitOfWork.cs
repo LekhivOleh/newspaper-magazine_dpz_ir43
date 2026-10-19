@@ -13,7 +13,8 @@ public class UnitOfWork(
     IShareRepository shares,
     ISavedArticleRepository savedArticles,
     ICollectionRepository collections,
-    ISubscriptionRepository subscriptions) : IUnitOfWork
+    ISubscriptionRepository subscriptions,
+    IAdvertisingRepository advertising) : IUnitOfWork
 {
     public ICategoryRepository Categories { get; } = categories;
     public IAuthorRepository Authors { get; } = authors;
@@ -25,6 +26,7 @@ public class UnitOfWork(
     public ISavedArticleRepository SavedArticles { get; } = savedArticles;
     public ICollectionRepository Collections { get; } = collections;
     public ISubscriptionRepository Subscriptions { get; } = subscriptions;
+    public IAdvertisingRepository Advertising { get; } = advertising;
 
     public Task<int> SaveChangesAsync(CancellationToken ct = default) => db.SaveChangesAsync(ct);
 }

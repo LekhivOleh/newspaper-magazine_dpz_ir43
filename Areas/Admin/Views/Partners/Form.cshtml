@@ -1,0 +1,36 @@
+@model PartnerForm
+@{
+    var isNew = Model.Id is null;
+    ViewData["Title"] = isNew ? "Новий партнер" : Model.Name;
+}
+
+<div class="admin-header"><h1>@ViewData["Title"]</h1></div>
+
+<form asp-action="@(isNew ? "Create" : "Edit")" asp-route-id="@Model.Id" method="post" class="admin-card admin-form" novalidate>
+    <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2"></div>
+    <div class="mb-3">
+        <label asp-for="Name" class="form-label"></label>
+        <input asp-for="Name" class="form-control" autofocus />
+        <span asp-validation-for="Name" class="text-danger small"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Tagline" class="form-label"></label>
+        <input asp-for="Tagline" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label asp-for="WebsiteUrl" class="form-label"></label>
+        <input asp-for="WebsiteUrl" class="form-control" placeholder="https://…" />
+        <span asp-validation-for="WebsiteUrl" class="text-danger small"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="LogoUrl" class="form-label"></label>
+        <input asp-for="LogoUrl" class="form-control" placeholder="https://…" />
+    </div>
+    <div class="form-check mb-4">
+        <input asp-for="IsActive" class="form-check-input" />
+        <label asp-for="IsActive" class="form-check-label"></label>
+        <div class="form-text">Вимкнений партнер зникає з усіх сторінок: і спонсорська плашка, і його оголошення.</div>
+    </div>
+    <button type="submit" class="btn btn-dark">Зберегти</button>
+    <a asp-action="Index" class="btn btn-link">Скасувати</a>
+</form>

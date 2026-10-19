@@ -92,13 +92,16 @@ public class ArticleForm
     [Display(Name = "Доступ")]
     public AccessLevel AccessLevel { get; set; } = AccessLevel.Free;
 
+    [Display(Name = "Партнерський матеріал від")]
+    public int? SponsorPartnerId { get; set; }
+
     public static ArticleForm From(ArticleSummaryDto a) => new()
     {
         Id = a.Id, Title = a.Title, Lead = a.Lead, CategoryId = a.Category.Id, AuthorId = a.Author.Id,
-        CoverImageUrl = a.CoverImageUrl, AccessLevel = a.AccessLevel
+        CoverImageUrl = a.CoverImageUrl, AccessLevel = a.AccessLevel, SponsorPartnerId = a.SponsorPartnerId
     };
 
-    public SaveArticleRequest ToRequest() => new(Title, Lead, CategoryId, AuthorId, CoverImageUrl, AccessLevel);
+    public SaveArticleRequest ToRequest() => new(Title, Lead, CategoryId, AuthorId, CoverImageUrl, AccessLevel, SponsorPartnerId);
 }
 
 public record ArticleListPage(

@@ -9,7 +9,7 @@ public static class ArticleMapper
         a.Id, a.Title, a.Slug, a.Lead, a.CoverImageUrl,
         new CategoryRefDto(a.Category.Id, a.Category.Name, a.Category.Slug),
         new AuthorDto(a.Author.Id, a.Author.FullName, a.Author.Position, a.Author.Bio, a.Author.AvatarUrl),
-        a.Status, a.AccessLevel, a.CreatedAt, a.PublishedAt, a.ViewCount);
+        a.Status, a.AccessLevel, a.CreatedAt, a.PublishedAt, a.ViewCount, a.SponsorPartnerId);
 
     public static ArticleDetailsDto ToDetails(this Article a) =>
         new(a.ToSummary(), a.Blocks.OrderBy(b => b.Position).Select(ToDto).ToList());

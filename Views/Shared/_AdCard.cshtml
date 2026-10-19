@@ -1,0 +1,20 @@
+@using CURSOVA.Application.Advertising
+@model AdDto
+
+<aside class="ad-card">
+    <span class="ad-label">Реклама@(Model.PartnerName is null ? "" : $" · {Model.PartnerName}")</span>
+    <a class="ad-body" href="/ads/@Model.Id/click" rel="sponsored noopener" target="@(Model.TargetUrl.StartsWith('/') ? "_self" : "_blank")">
+        @if (Model.ImageUrl is not null)
+        {
+            <img src="@Model.ImageUrl" alt="" loading="lazy" />
+        }
+        <div>
+            <strong>@Model.Headline</strong>
+            @if (Model.Body is not null)
+            {
+                <p>@Model.Body</p>
+            }
+            <span class="ad-cta">@Model.CallToAction →</span>
+        </div>
+    </a>
+</aside>

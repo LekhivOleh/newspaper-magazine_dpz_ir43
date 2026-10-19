@@ -1,13 +1,20 @@
 using System.Diagnostics;
+using CURSOVA.Application.Advertising;
 using CURSOVA.Application.Articles;
 using CURSOVA.Application.Issues;
 using CURSOVA.Application.Recommendations;
+using CURSOVA.Application.Subscriptions;
 using CURSOVA.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CURSOVA.Controllers;
 
-public class HomeController(IArticleService articles, IIssueService issues, IRecommendationService recommendations) : Controller
+public class HomeController(
+    IArticleService articles,
+    IIssueService issues,
+    IRecommendationService recommendations,
+    IAdvertisingService ads,
+    ISubscriptionService subscriptions) : Controller
 {
     private const int PageSize = 9;
 
@@ -23,7 +30,9 @@ public class HomeController(IArticleService articles, IIssueService issues, IRec
         var featuredIssue = page == 1 ? await issues.GetFeaturedAsync(ct) : null;
         var recommended = page == 1 ? await recommendations.RecommendAsync(3, ct: ct) : null;
 
-        return View(new HomeViewModel(featuredIssue, recommended, featured, rest, pager));
+        var ad = page == 1 && !await subscriptions.HasPremiumAccessAsync(ct) ? (await ads.PickAsync(null, 1, ct: ct)).FirstOrDefault() : null;
+
+        return View(new HomeViewModel(featuredIssue, recommended, ad, featured, rest, pager));
     }
 
     [HttpGet("/search")]

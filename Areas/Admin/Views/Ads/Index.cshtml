@@ -1,0 +1,49 @@
+@using CURSOVA.Application.Advertising
+@model IReadOnlyList<AdDto>
+@{
+    ViewData["Title"] = "Реклама";
+}
+
+<div class="admin-header">
+    <h1>Реклама</h1>
+    <a class="btn btn-dark" asp-action="Create">+ Нове оголошення</a>
+</div>
+
+<div class="stat-grid mb-4">
+    <div class="stat"><span class="stat-value">@Model.Count(a => a.IsActive)</span><span class="stat-label">Активних оголошень</span></div>
+    <div class="stat"><span class="stat-value">@Model.Sum(a => a.Impressions)</span><span class="stat-label">Показів</span></div>
+    <div class="stat"><span class="stat-value">@Model.Sum(a => a.Clicks)</span><span class="stat-label">Кліків</span></div>
+</div>
+
+<div class="admin-card">
+    <table class="table admin-table mb-0">
+        <thead><tr><th>Оголошення</th><th>Партнер</th><th>Покази</th><th>Кліки</th><th>CTR</th><th>Статус</th><th></th></tr></thead>
+        <tbody>
+            @if (Model.Count == 0)
+            {
+                <tr><td colspan="7" class="text-center text-muted py-4">Оголошень ще немає.</td></tr>
+            }
+            @foreach (var ad in Model)
+            {
+                <tr>
+                    <td><a asp-action="Edit" asp-route-id="@ad.Id" class="fw-semibold">@ad.Headline</a><div class="small text-muted">@ad.TargetUrl</div></td>
+                    <td class="small">@(ad.PartnerName ?? "власна")</td>
+                    <td>@ad.Impressions</td>
+                    <td>@ad.Clicks</td>
+                    <td>@ad.ClickThroughRate.ToString("P1")</td>
+                    <td>@(ad.IsActive ? Html.Raw("<span class=\"badge text-bg-success\">Активне</span>") : Html.Raw("<span class=\"badge text-bg-secondary\">Вимкнене</span>"))</td>
+                    <td class="text-end text-nowrap">
+                        <a class="btn btn-sm btn-outline-dark" asp-action="Edit" asp-route-id="@ad.Id">Редагувати</a>
+                        <form asp-action="Delete" asp-route-id="@ad.Id" method="post" class="d-inline" data-confirm="Видалити оголошення?">
+                            <button type="submit" class="btn btn-sm btn-outline-danger">Видалити</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@section Scripts {
+    <script src="~/js/admin.js" asp-append-version="true"></script>
+}

@@ -1,11 +1,13 @@
 using CURSOVA.Application.Abstractions.Sharing;
 using CURSOVA.Application.Articles;
 using CURSOVA.Application.Articles.Access;
+using CURSOVA.Application.Articles.Presentation;
 using CURSOVA.Application.Comments;
 using CURSOVA.Application.Common;
 using CURSOVA.Application.Interactive;
 using CURSOVA.Application.Profiles;
 using CURSOVA.Application.Sharing;
+using CURSOVA.Application.Subscriptions;
 using CURSOVA.Domain.Articles;
 using CURSOVA.Domain.Sharing;
 using CURSOVA.Models;
@@ -22,6 +24,8 @@ public class ArticleController(
     ISharingFacade sharing,
     ISavedArticleService saved,
     ICollectionService collections,
+    IArticlePageComposer composer,
+    ISubscriptionService subscriptions,
     IAppUrlProvider urls) : Controller
 {
     [HttpGet("{slug}")]
@@ -55,6 +59,7 @@ public class ArticleController(
                 (await sharing.GetStatsAsync(ShareableType.Article, article.Summary.Id, ct)).Total,
                 urls.ArticleUrl(article.Summary.Slug)),
             await saved.IsSavedAsync(article.Summary.Id, ct),
-            await collections.ChoicesForArticleAsync(article.Summary.Id, ct)));
+            await collections.ChoicesForArticleAsync(article.Summary.Id, ct),
+            await composer.ComposeAsync(article, new ReaderContext(await subscriptions.HasPremiumAccessAsync(ct)), ct)));
     }
 }

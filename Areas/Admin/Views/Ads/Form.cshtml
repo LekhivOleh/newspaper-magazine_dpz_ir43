@@ -1,0 +1,56 @@
+@using Microsoft.AspNetCore.Mvc.Rendering
+@model AdForm
+@{
+    var isNew = Model.Id is null;
+    ViewData["Title"] = isNew ? "Нове оголошення" : "Редагування оголошення";
+}
+
+<div class="admin-header"><h1>@ViewData["Title"]</h1></div>
+
+<form asp-action="@(isNew ? "Create" : "Edit")" asp-route-id="@Model.Id" method="post" class="admin-card admin-form" novalidate>
+    <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2"></div>
+    <div class="mb-3">
+        <label asp-for="Headline" class="form-label"></label>
+        <input asp-for="Headline" class="form-control" autofocus />
+        <span asp-validation-for="Headline" class="text-danger small"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Body" class="form-label"></label>
+        <textarea asp-for="Body" class="form-control" rows="2"></textarea>
+    </div>
+    <div class="row">
+        <div class="col-md-8 mb-3">
+            <label asp-for="TargetUrl" class="form-label"></label>
+            <input asp-for="TargetUrl" class="form-control" />
+            <span asp-validation-for="TargetUrl" class="text-danger small"></span>
+        </div>
+        <div class="col-md-4 mb-3">
+            <label asp-for="CallToAction" class="form-label"></label>
+            <input asp-for="CallToAction" class="form-control" />
+        </div>
+    </div>
+    <div class="mb-3">
+        <label asp-for="ImageUrl" class="form-label"></label>
+        <input asp-for="ImageUrl" class="form-control" placeholder="https://…" />
+    </div>
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label asp-for="PartnerId" class="form-label"></label>
+            <select asp-for="PartnerId" asp-items='(IEnumerable<SelectListItem>)ViewData["Partners"]!' class="form-select">
+                <option value="">— власна реклама —</option>
+            </select>
+        </div>
+        <div class="col-md-6 mb-3">
+            <label asp-for="CategoryId" class="form-label"></label>
+            <select asp-for="CategoryId" asp-items='(IEnumerable<SelectListItem>)ViewData["Categories"]!' class="form-select">
+                <option value="">— у всіх рубриках —</option>
+            </select>
+        </div>
+    </div>
+    <div class="form-check mb-4">
+        <input asp-for="IsActive" class="form-check-input" />
+        <label asp-for="IsActive" class="form-check-label"></label>
+    </div>
+    <button type="submit" class="btn btn-dark">Зберегти</button>
+    <a asp-action="Index" class="btn btn-link">Скасувати</a>
+</form>

@@ -73,6 +73,11 @@ public class Article : Entity
 
     public void SetAccessLevel(AccessLevel level) => AccessLevel = level;
 
+    /// <summary>Brand integration: the article is published as partner (sponsored) content.</summary>
+    public int? SponsorPartnerId { get; private set; }
+
+    public void SetSponsor(int? partnerId) => SponsorPartnerId = partnerId is > 0 ? partnerId : null;
+
     public void ReplaceContent(IEnumerable<ContentBlock> blocks)
     {
         var newBlocks = blocks.ToList();

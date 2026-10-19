@@ -1,3 +1,4 @@
+using CURSOVA.Application.Advertising;
 using CURSOVA.Application.Articles;
 using CURSOVA.Application.Authors;
 using CURSOVA.Application.Categories;
@@ -9,7 +10,11 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace CURSOVA.Areas.Admin.Controllers;
 
-public class ArticlesController(IArticleService articles, ICategoryService categories, IAuthorService authors) : AdminController
+public class ArticlesController(
+    IArticleService articles,
+    ICategoryService categories,
+    IAuthorService authors,
+    IAdvertisingService advertising) : AdminController
 {
     public async Task<IActionResult> Index(ArticleStatus? status, int? categoryId, string? q, int page = 1, CancellationToken ct = default)
     {
@@ -91,6 +96,7 @@ public class ArticlesController(IArticleService articles, ICategoryService categ
     {
         ViewData["Categories"] = (await categories.ListAsync(ct)).Select(c => new SelectListItem(c.Name, c.Id.ToString())).ToList();
         ViewData["Authors"] = (await authors.ListAsync(ct)).Select(a => new SelectListItem(a.FullName, a.Id.ToString())).ToList();
+        ViewData["Partners"] = (await advertising.ListPartnersAsync(ct)).Select(p => new SelectListItem(p.Name, p.Id.ToString())).ToList();
         return View("Form", form);
     }
 }
