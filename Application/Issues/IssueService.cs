@@ -1,6 +1,7 @@
 using CURSOVA.Application.Abstractions.Persistence;
 using CURSOVA.Application.Articles;
 using CURSOVA.Application.Common;
+using CURSOVA.Application.Notifications;
 using CURSOVA.Domain.Articles;
 using CURSOVA.Domain.Issues;
 
@@ -25,7 +26,7 @@ public interface IIssueService
     Task UnfeatureAsync(int id, CancellationToken ct = default);
 }
 
-public class IssueService(IUnitOfWork uow) : IIssueService
+public class IssueService(IUnitOfWork uow, IMagazineEventPublisher events) : IIssueService
 {
     public async Task<IReadOnlyList<IssueSummaryDto>> ListAsync(bool publishedOnly, CancellationToken ct = default) =>
         (await uow.Issues.ListWithTreeAsync(publishedOnly, ct)).Select(i => i.ToSummary()).ToList();
@@ -83,7 +84,16 @@ public class IssueService(IUnitOfWork uow) : IIssueService
     public Task MoveComponentAsync(int issueId, int componentId, int delta, CancellationToken ct = default) =>
         ChangeAsync(issueId, issue => issue.Move(componentId, delta), ct);
 
-    public Task PublishAsync(int id, CancellationToken ct = default) => ChangeAsync(id, issue => issue.Publish(), ct);
+    public async Task PublishAsync(int id, CancellationToken ct = default)
+    {
+        var issue = await LoadAsync(id, ct);
+        var firstRelease = issue.PublishedAt is null;
+        issue.Publish();
+        await uow.SaveChangesAsync(ct);
+
+        if (firstRelease)
+            await events.PublishAsync(new IssuePublished(issue.Id, issue.Title, issue.Slug, issue.Description, issue.CoverImageUrl), ct);
+    }
 
     public Task UnpublishAsync(int id, CancellationToken ct = default) => ChangeAsync(id, issue => issue.Unpublish(), ct);
 

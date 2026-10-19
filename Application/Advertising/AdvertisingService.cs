@@ -1,5 +1,6 @@
 using CURSOVA.Application.Abstractions.Persistence;
 using CURSOVA.Application.Common;
+using CURSOVA.Application.Notifications;
 using CURSOVA.Domain.Advertising;
 
 namespace CURSOVA.Application.Advertising;
@@ -44,9 +45,12 @@ public interface IAdvertisingService
     Task<AdDto> GetAdAsync(int id, CancellationToken ct = default);
     Task SaveAdAsync(int? id, SaveAdRequest request, CancellationToken ct = default);
     Task DeleteAdAsync(int id, CancellationToken ct = default);
+
+    /// <summary>Announces an ad to free readers as a partner promotion notification.</summary>
+    Task LaunchPromotionAsync(int adId, CancellationToken ct = default);
 }
 
-public class AdvertisingService(IUnitOfWork uow) : IAdvertisingService
+public class AdvertisingService(IUnitOfWork uow, IMagazineEventPublisher events, TimeProvider clock) : IAdvertisingService
 {
     public async Task<IReadOnlyList<AdDto>> PickAsync(int? categoryId, int count, int? partnerId = null, CancellationToken ct = default)
     {
@@ -150,6 +154,19 @@ public class AdvertisingService(IUnitOfWork uow) : IAdvertisingService
     {
         uow.Advertising.RemoveAd(await uow.Advertising.GetAdAsync(id, ct) ?? throw NotFoundException.For<Ad>(id));
         await uow.SaveChangesAsync(ct);
+    }
+
+    public async Task LaunchPromotionAsync(int adId, CancellationToken ct = default)
+    {
+        var ad = await uow.Advertising.GetAdAsync(adId, ct) ?? throw NotFoundException.For<Ad>(adId);
+        var partner = ad.PartnerId is { } partnerId ? await uow.Advertising.GetPartnerAsync(partnerId, ct) : null;
+        if (partner is { IsActive: false })
+            throw new ConflictException("Партнер цього оголошення вимкнений.");
+
+        ad.MarkPromoted(clock.GetUtcNow().UtcDateTime);
+        await uow.SaveChangesAsync(ct);
+
+        await events.PublishAsync(new PartnerPromotionLaunched(ad.Id, ad.PartnerId, partner?.Name, ad.Headline, ad.Body, ad.ImageUrl), ct);
     }
 
     private static PartnerDto ToDto(Partner p) => new(p.Id, p.Name, p.Tagline, p.LogoUrl, p.WebsiteUrl, p.IsActive);

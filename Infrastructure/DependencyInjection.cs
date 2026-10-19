@@ -1,7 +1,9 @@
 using CURSOVA.Application.Abstractions.Identity;
+using CURSOVA.Application.Abstractions.Messaging;
 using CURSOVA.Application.Abstractions.Persistence;
 using CURSOVA.Application.Abstractions.Sharing;
 using CURSOVA.Infrastructure.Identity;
+using CURSOVA.Infrastructure.Messaging;
 using CURSOVA.Infrastructure.Persistence;
 using CURSOVA.Infrastructure.Persistence.Repositories;
 using CURSOVA.Infrastructure.Sharing;
@@ -33,11 +35,13 @@ public static class DependencyInjection
         services.AddScoped<IRecommendationDataSource, RecommendationDataSource>();
         services.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
         services.AddScoped<IAdvertisingRepository, AdvertisingRepository>();
+        services.AddScoped<INotificationRepository, NotificationRepository>();
         services.AddSingleton(TimeProvider.System);
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 
         services.AddIdentityServices();
         services.AddSharing();
+        services.AddSingleton<IEmailSender, LoggingEmailSender>();
 
         services.AddProblemDetails();
         services.AddExceptionHandler<ApiExceptionHandler>();

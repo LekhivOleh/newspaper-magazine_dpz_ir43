@@ -8,6 +8,8 @@ public class AppUrlProvider(IHttpContextAccessor accessor, IConfiguration config
 
     public string QuizUrl(int quizId) => $"{BaseUrl}/quizzes/{quizId}";
 
+    public string Absolute(string localPath) => $"{BaseUrl}/{localPath.TrimStart('/')}";
+
     // Configurable for deployments behind a proxy; otherwise taken from the current request.
     private string BaseUrl =>
         configuration["PublicBaseUrl"]?.TrimEnd('/')

@@ -6,6 +6,7 @@ using CURSOVA.Domain.Categories;
 using CURSOVA.Domain.Comments;
 using CURSOVA.Domain.Interactive;
 using CURSOVA.Domain.Issues;
+using CURSOVA.Domain.Notifications;
 using CURSOVA.Domain.Profiles;
 using CURSOVA.Domain.Sharing;
 using CURSOVA.Domain.Subscriptions;
@@ -34,6 +35,7 @@ public class MagazineDbContext(DbContextOptions<MagazineDbContext> options)
     public DbSet<Subscription> Subscriptions => Set<Subscription>();
     public DbSet<Partner> Partners => Set<Partner>();
     public DbSet<Ad> Ads => Set<Ad>();
+    public DbSet<Notification> Notifications => Set<Notification>();
 
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
     {

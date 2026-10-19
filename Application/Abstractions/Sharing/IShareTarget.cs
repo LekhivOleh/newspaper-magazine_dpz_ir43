@@ -15,4 +15,5 @@ public interface IAppUrlProvider
 {
     string ArticleUrl(string slug);
     string QuizUrl(int quizId);
+    string Absolute(string localPath);
 }

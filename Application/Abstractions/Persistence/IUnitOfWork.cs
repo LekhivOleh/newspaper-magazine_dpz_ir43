@@ -13,6 +13,7 @@ public interface IUnitOfWork
     ICollectionRepository Collections { get; }
     ISubscriptionRepository Subscriptions { get; }
     IAdvertisingRepository Advertising { get; }
+    INotificationRepository Notifications { get; }
 
     Task<int> SaveChangesAsync(CancellationToken ct = default);
 }

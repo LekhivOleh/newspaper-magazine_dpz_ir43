@@ -17,6 +17,7 @@ public class Ad : Entity
     public bool IsActive { get; private set; } = true;
     public int Impressions { get; private set; }
     public int Clicks { get; private set; }
+    public DateTime? PromotedAt { get; private set; }
 
     private Ad() { }
 
@@ -44,6 +45,16 @@ public class Ad : Entity
     public void RegisterImpression() => Impressions++;
 
     public void RegisterClick() => Clicks++;
+
+    public void MarkPromoted(DateTime now)
+    {
+        if (!IsActive)
+            throw new DomainException("Розсилати можна лише активне оголошення.");
+        if (PromotedAt is { } last && now - last < TimeSpan.FromDays(1))
+            throw new DomainException("Цю пропозицію вже розсилали за останню добу.");
+
+        PromotedAt = now;
+    }
 
     public double ClickThroughRate => Impressions == 0 ? 0 : (double)Clicks / Impressions;
 }

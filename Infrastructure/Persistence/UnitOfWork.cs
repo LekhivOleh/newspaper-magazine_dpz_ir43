@@ -14,7 +14,8 @@ public class UnitOfWork(
     ISavedArticleRepository savedArticles,
     ICollectionRepository collections,
     ISubscriptionRepository subscriptions,
-    IAdvertisingRepository advertising) : IUnitOfWork
+    IAdvertisingRepository advertising,
+    INotificationRepository notifications) : IUnitOfWork
 {
     public ICategoryRepository Categories { get; } = categories;
     public IAuthorRepository Authors { get; } = authors;
@@ -27,6 +28,7 @@ public class UnitOfWork(
     public ICollectionRepository Collections { get; } = collections;
     public ISubscriptionRepository Subscriptions { get; } = subscriptions;
     public IAdvertisingRepository Advertising { get; } = advertising;
+    public INotificationRepository Notifications { get; } = notifications;
 
     public Task<int> SaveChangesAsync(CancellationToken ct = default) => db.SaveChangesAsync(ct);
 }

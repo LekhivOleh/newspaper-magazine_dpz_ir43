@@ -1,5 +1,6 @@
 using CURSOVA.Application.Abstractions.Persistence;
 using CURSOVA.Application.Common;
+using CURSOVA.Application.Notifications;
 using CURSOVA.Domain.Articles;
 using CURSOVA.Domain.Articles.Building;
 using CURSOVA.Domain.Authors;
@@ -7,7 +8,7 @@ using CURSOVA.Domain.Categories;
 
 namespace CURSOVA.Application.Articles;
 
-public class ArticleService(IUnitOfWork uow) : IArticleService
+public class ArticleService(IUnitOfWork uow, IMagazineEventPublisher events) : IArticleService
 {
     public Task<PagedResult<ArticleSummaryDto>> SearchAsync(ArticleFilter filter, CancellationToken ct = default) =>
         QueryAsync(filter, filter.Status ?? ArticleStatus.Published, ct);
@@ -91,8 +92,19 @@ public class ArticleService(IUnitOfWork uow) : IArticleService
         return ChangeAsync(id, a => a.ReplaceContent(content.Build()), ct);
     }
 
-    public Task<ArticleDetailsDto> PublishAsync(int id, CancellationToken ct = default) =>
-        ChangeAsync(id, a => a.Publish(), ct);
+    public async Task<ArticleDetailsDto> PublishAsync(int id, CancellationToken ct = default)
+    {
+        var article = await LoadAsync(id, ct);
+        var firstRelease = article.PublishedAt is null;
+        article.Publish();
+        await uow.SaveChangesAsync(ct);
+
+        if (firstRelease && (article.IsPremium || article.Blocks.Any(b => b.IsExclusive)))
+            await events.PublishAsync(new ExclusiveContentPublished(
+                article.Id, article.Title, article.Slug, article.Lead, article.CoverImageUrl, article.IsPremium), ct);
+
+        return article.ToDetails();
+    }
 
     public Task<ArticleDetailsDto> ArchiveAsync(int id, CancellationToken ct = default) =>
         ChangeAsync(id, a => a.Archive(), ct);

@@ -9,6 +9,7 @@ using CURSOVA.Application.Comments;
 using CURSOVA.Application.Comments.Moderation;
 using CURSOVA.Application.Interactive;
 using CURSOVA.Application.Issues;
+using CURSOVA.Application.Notifications;
 using CURSOVA.Application.Profiles;
 using CURSOVA.Application.Recommendations;
 using CURSOVA.Application.Sharing;
@@ -47,7 +48,24 @@ public static class DependencyInjection
             return new SponsoredContentDecorator(new AdSlotsDecorator(new PlainArticleComposer(), ads), ads);
         });
 
+        services.AddNotifications();
+
         return services;
+    }
+
+    private static void AddNotifications(this IServiceCollection services)
+    {
+        services.AddSingleton<NotificationFactory, NewIssueNotificationFactory>();
+        services.AddSingleton<NotificationFactory, ExclusiveContentNotificationFactory>();
+        services.AddSingleton<NotificationFactory, PartnerPromoNotificationFactory>();
+        services.AddSingleton<INotificationFactories, NotificationFactories>();
+
+        services.AddScoped<IAudienceResolver, AudienceResolver>();
+        services.AddScoped<IMagazineEventObserver, InAppNotificationObserver>();
+        services.AddScoped<IMagazineEventObserver, EmailNotificationObserver>();
+        services.AddScoped<IMagazineEventPublisher, MagazineEventPublisher>();
+
+        services.AddScoped<INotificationService, NotificationService>();
     }
 
     private static void AddRecommendations(this IServiceCollection services)

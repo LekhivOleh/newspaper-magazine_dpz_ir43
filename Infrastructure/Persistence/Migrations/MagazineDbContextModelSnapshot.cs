@@ -56,6 +56,9 @@ namespace CURSOVA.Infrastructure.Persistence.Migrations
                     b.Property<int?>("PartnerId")
                         .HasColumnType("INTEGER");
 
+                    b.Property<DateTime?>("PromotedAt")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("TargetUrl")
                         .IsRequired()
                         .HasMaxLength(500)
@@ -590,6 +593,56 @@ namespace CURSOVA.Infrastructure.Persistence.Migrations
                     b.ToTable("IssueComponents", (string)null);
 
                     b.HasDiscriminator<string>("Kind").HasValue("IssueComponent");
+
+                    b.UseTphMappingStrategy();
+                });
+
+            modelBuilder.Entity("CURSOVA.Domain.Notifications.Notification", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ImageUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Link")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasMaxLength(600)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("ReadAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId", "CreatedAt");
+
+                    b.ToTable("Notifications");
+
+                    b.HasDiscriminator<string>("Type").HasValue("Notification");
 
                     b.UseTphMappingStrategy();
                 });
@@ -1136,6 +1189,39 @@ namespace CURSOVA.Infrastructure.Persistence.Migrations
                     b.HasDiscriminator().HasValue("section");
                 });
 
+            modelBuilder.Entity("CURSOVA.Domain.Notifications.ExclusiveContentNotification", b =>
+                {
+                    b.HasBaseType("CURSOVA.Domain.Notifications.Notification");
+
+                    b.Property<int>("ArticleId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasDiscriminator().HasValue("exclusive");
+                });
+
+            modelBuilder.Entity("CURSOVA.Domain.Notifications.NewIssueNotification", b =>
+                {
+                    b.HasBaseType("CURSOVA.Domain.Notifications.Notification");
+
+                    b.Property<int>("IssueId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasDiscriminator().HasValue("new-issue");
+                });
+
+            modelBuilder.Entity("CURSOVA.Domain.Notifications.PartnerPromoNotification", b =>
+                {
+                    b.HasBaseType("CURSOVA.Domain.Notifications.Notification");
+
+                    b.Property<int>("AdId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("PartnerId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasDiscriminator().HasValue("partner-promo");
+                });
+
             modelBuilder.Entity("CURSOVA.Domain.Advertising.Ad", b =>
                 {
                     b.HasOne("CURSOVA.Domain.Categories.Category", null)
@@ -1264,6 +1350,15 @@ namespace CURSOVA.Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("Parent");
+                });
+
+            modelBuilder.Entity("CURSOVA.Domain.Notifications.Notification", b =>
+                {
+                    b.HasOne("CURSOVA.Infrastructure.Identity.ApplicationUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("CURSOVA.Domain.Profiles.Collection", b =>
