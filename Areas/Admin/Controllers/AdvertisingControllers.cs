@@ -81,6 +81,15 @@ public class AdsController(IAdvertisingService advertising, ICategoryService cat
         return RedirectToAction(nameof(Index));
     }
 
+    [HttpPost]
+    public async Task<IActionResult> Promote(int id, CancellationToken ct)
+    {
+        Flash(await TryAsync(() => advertising.LaunchPromotionAsync(id, ct))
+            ? "Пропозицію розіслано читачам без Premium — вони побачать її у сповіщеннях."
+            : ModelState[""]!.Errors[0].ErrorMessage);
+        return RedirectToAction(nameof(Index));
+    }
+
     private async Task<IActionResult> SaveAsync(int? id, AdForm form, CancellationToken ct)
     {
         form.Id = id;

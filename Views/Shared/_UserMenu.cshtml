@@ -6,6 +6,7 @@
 @if (User.Identity?.IsAuthenticated == true)
 {
     var user = await UserManager.GetUserAsync(User);
+    <vc:notification-bell />
     @if (await Subscriptions.HasPremiumAccessAsync())
     {
         <a class="premium-badge" href="/profile/subscription" title="Ваша підписка">★ Premium</a>

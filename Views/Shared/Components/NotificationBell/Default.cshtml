@@ -1,0 +1,48 @@
+@using CURSOVA.Application.Notifications
+@model NotificationBellViewModel
+@{
+    var returnUrl = Context.Request.Path + Context.Request.QueryString;
+}
+
+<div class="dropdown notification-bell">
+    <button class="bell-button" type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"
+            aria-label="@(Model.UnreadCount > 0 ? UkrainianPlural.Format(Model.UnreadCount, "нове сповіщення", "нові сповіщення", "нових сповіщень") : "Сповіщення")">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9" />
+            <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+        </svg>
+        @if (Model.UnreadCount > 0)
+        {
+            <span class="bell-count">@(Model.UnreadCount > 9 ? "9+" : Model.UnreadCount.ToString())</span>
+        }
+    </button>
+    <div class="dropdown-menu dropdown-menu-end bell-menu">
+        <div class="bell-menu-header">
+            <strong>Сповіщення</strong>
+            @if (Model.UnreadCount > 0)
+            {
+                <form method="post" action="/notifications/read-all">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="returnUrl" value="@returnUrl" />
+                    <button type="submit" class="btn btn-link btn-sm p-0">Прочитати все</button>
+                </form>
+            }
+        </div>
+        @if (Model.Latest.Count == 0)
+        {
+            <p class="bell-empty">Поки що тихо. Ми повідомимо про новий випуск.</p>
+        }
+        @foreach (var n in Model.Latest)
+        {
+            <form method="post" action="/notifications/@n.Id/open">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="bell-item @(n.IsRead ? "" : "unread")">
+                    <span class="notification-kind @NotificationLabels.CssClass(n.Kind)">@NotificationLabels.For(n.Kind)</span>
+                    <span class="bell-item-title">@n.Title</span>
+                    <span class="bell-item-time">@TimeAgo.Format(n.CreatedAt)</span>
+                </button>
+            </form>
+        }
+        <a class="bell-menu-footer" href="/profile/notifications">Усі сповіщення</a>
+    </div>
+</div>

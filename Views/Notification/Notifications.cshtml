@@ -1,0 +1,56 @@
+@model NotificationsPageViewModel
+@{
+    ViewData["Title"] = "Сповіщення";
+    var returnUrl = Context.Request.Path + Context.Request.QueryString;
+}
+
+<partial name="~/Views/Profile/_ProfileHeader.cshtml" model="Model.DisplayName" />
+
+@if (Model.Notifications.TotalCount == 0)
+{
+    <div class="empty-state">
+        <p>Сповіщень ще немає.</p>
+        <p class="small">Тут з'являться нові випуски журналу, ексклюзиви для Premium і пропозиції партнерів.</p>
+    </div>
+}
+else
+{
+    <div class="notifications-toolbar">
+        <span class="text-muted">
+            @(Model.UnreadCount > 0 ? UkrainianPlural.Format(Model.UnreadCount, "непрочитане", "непрочитані", "непрочитаних") : "Усе прочитано")
+        </span>
+        @if (Model.UnreadCount > 0)
+        {
+            <form method="post" action="/notifications/read-all">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="returnUrl" value="@returnUrl" />
+                <button type="submit" class="btn btn-outline-dark btn-sm">Позначити все прочитаним</button>
+            </form>
+        }
+    </div>
+
+    <ul class="notification-list">
+        @foreach (var n in Model.Notifications.Items)
+        {
+            <li class="notification-row @(n.IsRead ? "" : "unread")">
+                @if (n.ImageUrl is not null)
+                {
+                    <img class="notification-thumb" src="@n.ImageUrl" alt="" loading="lazy" />
+                }
+                <div class="notification-body">
+                    <div class="notification-meta">
+                        <span class="notification-kind @NotificationLabels.CssClass(n.Kind)">@NotificationLabels.For(n.Kind)</span>
+                        <span>@TimeAgo.Format(n.CreatedAt)</span>
+                    </div>
+                    <h2 class="notification-title">@n.Title</h2>
+                    <p class="notification-message">@n.Message</p>
+                    <form method="post" action="/notifications/@n.Id/open">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-dark btn-sm">@(n.Kind == CURSOVA.Domain.Notifications.NotificationKind.PartnerPromo ? "Детальніше" : "Читати")</button>
+                    </form>
+                </div>
+            </li>
+        }
+    </ul>
+    <partial name="_Pagination" model="Model.Pager" />
+}

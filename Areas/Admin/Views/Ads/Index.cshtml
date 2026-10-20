@@ -17,11 +17,11 @@
 
 <div class="admin-card">
     <table class="table admin-table mb-0">
-        <thead><tr><th>Оголошення</th><th>Партнер</th><th>Покази</th><th>Кліки</th><th>CTR</th><th>Статус</th><th></th></tr></thead>
+        <thead><tr><th>Оголошення</th><th>Партнер</th><th>Покази</th><th>Кліки</th><th>CTR</th><th>Розсилка</th><th>Статус</th><th></th></tr></thead>
         <tbody>
             @if (Model.Count == 0)
             {
-                <tr><td colspan="7" class="text-center text-muted py-4">Оголошень ще немає.</td></tr>
+                <tr><td colspan="8" class="text-center text-muted py-4">Оголошень ще немає.</td></tr>
             }
             @foreach (var ad in Model)
             {
@@ -31,8 +31,16 @@
                     <td>@ad.Impressions</td>
                     <td>@ad.Clicks</td>
                     <td>@ad.ClickThroughRate.ToString("P1")</td>
+                    <td class="small text-nowrap">@(ad.PromotedAt?.ToLocalTime().ToString("d MMM, HH:mm") ?? "—")</td>
                     <td>@(ad.IsActive ? Html.Raw("<span class=\"badge text-bg-success\">Активне</span>") : Html.Raw("<span class=\"badge text-bg-secondary\">Вимкнене</span>"))</td>
                     <td class="text-end text-nowrap">
+                        @if (ad.IsActive)
+                        {
+                            <form asp-action="Promote" asp-route-id="@ad.Id" method="post" class="d-inline"
+                                  data-confirm="Надіслати цю пропозицію всім читачам без Premium?">
+                                <button type="submit" class="btn btn-sm btn-outline-primary" title="Сповіщення для читачів без Premium">Розіслати</button>
+                            </form>
+                        }
                         <a class="btn btn-sm btn-outline-dark" asp-action="Edit" asp-route-id="@ad.Id">Редагувати</a>
                         <form asp-action="Delete" asp-route-id="@ad.Id" method="post" class="d-inline" data-confirm="Видалити оголошення?">
                             <button type="submit" class="btn btn-sm btn-outline-danger">Видалити</button>

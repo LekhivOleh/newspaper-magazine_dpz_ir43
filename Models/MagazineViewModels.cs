@@ -6,6 +6,7 @@ using CURSOVA.Application.Comments;
 using CURSOVA.Application.Common;
 using CURSOVA.Application.Interactive;
 using CURSOVA.Application.Issues;
+using CURSOVA.Application.Notifications;
 using CURSOVA.Application.Profiles;
 using CURSOVA.Application.Recommendations;
 using CURSOVA.Application.Sharing;
@@ -38,3 +39,7 @@ public record RecommendationsPageViewModel(
     IReadOnlyList<InterestDto> Interests);
 
 public record PremiumPageViewModel(IReadOnlyList<PlanDto> Plans, SubscriptionDto? Current);
+
+public record NotificationsPageViewModel(string DisplayName, PagedResult<NotificationDto> Notifications, int UnreadCount, PagerViewModel Pager);
+
+public record NotificationBellViewModel(int UnreadCount, IReadOnlyList<NotificationDto> Latest);

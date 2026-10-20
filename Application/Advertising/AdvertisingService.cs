@@ -19,7 +19,8 @@ public record AdDto(
     int? CategoryId,
     bool IsActive,
     int Impressions,
-    int Clicks)
+    int Clicks,
+    DateTime? PromotedAt = null)
 {
     public double ClickThroughRate => Impressions == 0 ? 0 : (double)Clicks / Impressions;
 }
@@ -174,5 +175,5 @@ public class AdvertisingService(IUnitOfWork uow, IMagazineEventPublisher events,
     private static AdDto ToDto(Ad a, IReadOnlyDictionary<int, Partner> partners) => new(
         a.Id, a.Headline, a.Body, a.ImageUrl, a.TargetUrl, a.CallToAction, a.PartnerId,
         a.PartnerId is { } pid ? partners.GetValueOrDefault(pid)?.Name : null,
-        a.CategoryId, a.IsActive, a.Impressions, a.Clicks);
+        a.CategoryId, a.IsActive, a.Impressions, a.Clicks, a.PromotedAt);
 }
